@@ -1,57 +1,43 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenerativeAI, Part } from "@google/generative-ai";
 import { buildEstimatePrompt } from "@/lib/prompts";
 import { WizardState, EstimateResult } from "@/lib/types";
 
-const client = new Anthropic();
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function POST(req: NextRequest) {
   const body = await req.json() as { state: WizardState };
   const { state } = body;
 
   const prompt = buildEstimatePrompt(state);
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-  const images: Anthropic.ImageBlockParam[] = [];
+  const parts: Part[] = [];
 
   if (state.photos.currentPhotoBase64) {
-    const base64Data = state.photos.currentPhotoBase64.split(",")[1];
-    images.push({
-      type: "image",
-      source: {
-        type: "base64",
-        media_type: "image/jpeg",
-        data: base64Data,
+    parts.push({
+      inlineData: {
+        mimeType: "image/jpeg",
+        data: state.photos.currentPhotoBase64.split(",")[1],
       },
     });
   }
 
   if (state.photos.goalPhotoBase64) {
-    const base64Data = state.photos.goalPhotoBase64.split(",")[1];
-    images.push({
-      type: "image",
-      source: {
-        type: "base64",
-        media_type: "image/jpeg",
-        data: base64Data,
+    parts.push({
+      inlineData: {
+        mimeType: "image/jpeg",
+        data: state.photos.goalPhotoBase64.split(",")[1],
       },
     });
   }
 
-  const message = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 1024,
-    messages: [
-      {
-        role: "user",
-        content: [
-          ...images,
-          { type: "text", text: prompt },
-        ],
-      },
-    ],
-  });
+  parts.push({ text: prompt });
 
-  const rawText = (message.content[0] as Anthropic.TextBlock).text;
+  const response = await model.generateContent(parts);
+  const rawText = response.response.text().trim()
+    .replace(/^```json\n?/, "")
+    .replace(/\n?```$/, "");
 
   let result: EstimateResult;
   try {
