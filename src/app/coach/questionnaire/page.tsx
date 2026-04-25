@@ -31,6 +31,8 @@ export default function QuestionnairePage() {
       <StepHeader
         title="Your goal and training"
         subtitle="A few more details help us tailor the estimate to your situation."
+        step={3}
+        totalSteps={5}
       />
       <GoalForm />
       <SportSelector />

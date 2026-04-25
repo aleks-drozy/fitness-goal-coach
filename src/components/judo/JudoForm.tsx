@@ -30,7 +30,6 @@ export function JudoForm() {
           placeholder="3"
           value={judo.sessionsPerWeek ?? ""}
           onChange={(e) => setJudo({ sessionsPerWeek: e.target.value ? Number(e.target.value) : null })}
-          className="bg-zinc-900 border-zinc-800"
         />
       </div>
       <div className="space-y-1.5">
@@ -39,7 +38,7 @@ export function JudoForm() {
           value={judo.intensity ?? ""}
           onValueChange={(v) => setJudo({ intensity: v as JudoIntensity })}
         >
-          <SelectTrigger className="bg-zinc-900 border-zinc-800">
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="Select intensity" />
           </SelectTrigger>
           <SelectContent>
@@ -49,31 +48,38 @@ export function JudoForm() {
           </SelectContent>
         </Select>
       </div>
-      <div className="flex items-start gap-3">
+      <div
+        className="flex items-start gap-3 rounded-[var(--r-card)] border p-4"
+        style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+      >
         <Checkbox
           id="competition"
           checked={judo.hasCompetitionSoon}
           onCheckedChange={(v) => setJudo({ hasCompetitionSoon: Boolean(v) })}
         />
-        <Label htmlFor="competition" className="text-sm leading-relaxed cursor-pointer">
+        <Label htmlFor="competition" className="text-sm leading-relaxed cursor-pointer font-normal">
           I have a competition or grading within the next 8 weeks
         </Label>
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="weeklog">
           What did you do in judo this week?
-          <span className="ml-1 text-xs text-zinc-500 font-normal">(optional but helpful)</span>
+          <span
+            className="ml-1.5 text-xs font-normal"
+            style={{ color: "var(--muted-foreground)" }}
+          >
+            optional but helpful
+          </span>
         </Label>
         <Textarea
           id="weeklog"
           placeholder="e.g. 2 randori sessions, worked on grip fighting, uchi-komi sets, drills"
           value={judo.weeklySessionLog}
           onChange={(e) => setJudo({ weeklySessionLog: e.target.value })}
-          className="bg-zinc-900 border-zinc-800 resize-none"
           rows={3}
         />
-        <p className="text-xs text-zinc-600">
-          This helps us estimate how much training volume and fatigue to factor in when suggesting S&amp;C work.
+        <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+          Helps us estimate training volume and fatigue when suggesting S&amp;C work.
         </p>
       </div>
     </div>

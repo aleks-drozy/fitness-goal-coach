@@ -3,30 +3,55 @@ import { buttonVariants } from "@/components/ui/button";
 
 export default function LandingPage() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-6 text-center">
-      <div className="max-w-xl space-y-6">
-        <p className="text-xs uppercase tracking-widest text-zinc-500 font-medium">
-          Fitness Goal Coach
-        </p>
-        <h1 className="text-4xl sm:text-5xl font-semibold leading-tight tracking-tight">
-          How long will your goal actually take?
-        </h1>
-        <p className="text-zinc-400 text-lg leading-relaxed">
-          Upload a photo of your current physique and your goal, answer a few questions,
-          and get a realistic, evidence-informed estimate — not a promise.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+    <main
+      className="min-h-screen flex flex-col items-center justify-center px-6 text-center"
+      style={{ paddingTop: "6rem", paddingBottom: "6rem" }}
+    >
+      <div className="w-full max-w-md space-y-8">
+        <div className="space-y-5">
+          <p
+            className="text-[0.6875rem] font-medium tracking-[0.1em] uppercase"
+            style={{ color: "var(--primary)" }}
+          >
+            Fitness Goal Coach
+          </p>
+          <h1
+            className="font-semibold leading-[1.1]"
+            style={{
+              fontSize: "clamp(2rem, 8vw, 2.75rem)",
+              letterSpacing: "-0.03em",
+              color: "var(--foreground)",
+            }}
+          >
+            How long will your goal actually take?
+          </h1>
+          <p
+            className="text-base leading-relaxed mx-auto"
+            style={{
+              color: "var(--muted-foreground)",
+              maxWidth: "30rem",
+            }}
+          >
+            Upload a photo of your current physique and your goal, answer a few questions, and get a
+            realistic evidence-informed estimate — not a promise.
+          </p>
+        </div>
+
+        <div className="flex flex-col items-center gap-4">
           <Link
             href="/coach/onboarding"
-            className={buttonVariants({ size: "lg", className: "bg-white text-zinc-950 hover:bg-zinc-100 font-medium" })}
+            className={buttonVariants({ size: "lg" })}
+            style={{ minWidth: "12rem" }}
           >
             Get my estimate →
           </Link>
+          <p
+            className="text-xs leading-relaxed"
+            style={{ color: "var(--muted-foreground)", opacity: 0.6, maxWidth: "22rem" }}
+          >
+            General fitness estimates only. Not medical advice.
+          </p>
         </div>
-        <p className="text-xs text-zinc-600 max-w-sm mx-auto">
-          This tool provides general fitness estimates only. It is not medical advice and does not
-          replace a doctor, physiotherapist, or qualified coach.
-        </p>
       </div>
     </main>
   );

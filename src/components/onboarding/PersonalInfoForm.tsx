@@ -26,7 +26,6 @@ export function PersonalInfoForm() {
             placeholder="Alex"
             value={onboarding.name}
             onChange={(e) => setOnboarding({ name: e.target.value })}
-            className="bg-zinc-900 border-zinc-800"
           />
         </div>
         <div className="space-y-1.5">
@@ -39,7 +38,6 @@ export function PersonalInfoForm() {
             placeholder="25"
             value={onboarding.age ?? ""}
             onChange={(e) => setOnboarding({ age: e.target.value ? Number(e.target.value) : null })}
-            className="bg-zinc-900 border-zinc-800"
           />
         </div>
         <div className="space-y-1.5">
@@ -48,7 +46,7 @@ export function PersonalInfoForm() {
             value={onboarding.sex ?? ""}
             onValueChange={(v) => setOnboarding({ sex: v as Sex })}
           >
-            <SelectTrigger className="bg-zinc-900 border-zinc-800">
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Select" />
             </SelectTrigger>
             <SelectContent>
@@ -66,7 +64,6 @@ export function PersonalInfoForm() {
             placeholder="175"
             value={onboarding.heightCm ?? ""}
             onChange={(e) => setOnboarding({ heightCm: e.target.value ? Number(e.target.value) : null })}
-            className="bg-zinc-900 border-zinc-800"
           />
         </div>
         <div className="space-y-1.5">
@@ -77,16 +74,15 @@ export function PersonalInfoForm() {
             placeholder="75"
             value={onboarding.weightKg ?? ""}
             onChange={(e) => setOnboarding({ weightKg: e.target.value ? Number(e.target.value) : null })}
-            className="bg-zinc-900 border-zinc-800"
           />
         </div>
-        <div className="space-y-1.5">
+        <div className="col-span-2 space-y-1.5">
           <Label>Training experience</Label>
           <Select
             value={onboarding.experience ?? ""}
             onValueChange={(v) => setOnboarding({ experience: v as ExperienceLevel })}
           >
-            <SelectTrigger className="bg-zinc-900 border-zinc-800">
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Select" />
             </SelectTrigger>
             <SelectContent>
@@ -96,13 +92,13 @@ export function PersonalInfoForm() {
             </SelectContent>
           </Select>
         </div>
-        <div className="space-y-1.5">
+        <div className="col-span-2 space-y-1.5">
           <Label>Activity level</Label>
           <Select
             value={onboarding.activityLevel ?? ""}
             onValueChange={(v) => setOnboarding({ activityLevel: v as ActivityLevel })}
           >
-            <SelectTrigger className="bg-zinc-900 border-zinc-800">
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Select" />
             </SelectTrigger>
             <SelectContent>

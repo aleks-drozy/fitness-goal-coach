@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 
 interface PhotoUploadProps {
@@ -12,6 +12,7 @@ interface PhotoUploadProps {
 
 export function PhotoUpload({ label, hint, base64Value, onChange }: PhotoUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
 
   const handleFile = (file: File) => {
     const reader = new FileReader();
@@ -29,20 +30,33 @@ export function PhotoUpload({ label, hint, base64Value, onChange }: PhotoUploadP
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
+    setIsDragOver(false);
     const file = e.dataTransfer.files?.[0];
     if (file) handleFile(file);
   };
 
   return (
     <div className="space-y-2">
-      <p className="text-sm font-medium text-zinc-200">{label}</p>
-      {hint && <p className="text-xs text-zinc-500">{hint}</p>}
+      <p className="text-[0.8125rem] font-medium" style={{ color: "var(--foreground)" }}>
+        {label}
+      </p>
+      {hint && (
+        <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+          {hint}
+        </p>
+      )}
       <div
         onClick={() => inputRef.current?.click()}
         onDrop={handleDrop}
-        onDragOver={(e) => e.preventDefault()}
-        className="relative border border-dashed border-zinc-700 rounded-xl overflow-hidden cursor-pointer hover:border-zinc-500 transition-colors"
-        style={{ minHeight: 200 }}
+        onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+        onDragLeave={() => setIsDragOver(false)}
+        className="relative rounded-[var(--r-card)] overflow-hidden cursor-pointer"
+        style={{
+          minHeight: 200,
+          border: `1.5px dashed ${isDragOver ? "var(--primary)" : "var(--border)"}`,
+          background: isDragOver ? "var(--accent-dim)" : "var(--surface)",
+          transition: `border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out)`,
+        }}
       >
         {base64Value ? (
           <Image
@@ -52,8 +66,20 @@ export function PhotoUpload({ label, hint, base64Value, onChange }: PhotoUploadP
             className="object-cover"
           />
         ) : (
-          <div className="flex flex-col items-center justify-center h-full min-h-[200px] text-zinc-500 gap-2 p-4">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <div
+            className="flex flex-col items-center justify-center h-full min-h-[200px] gap-2.5 p-4"
+            style={{ color: isDragOver ? "var(--primary)" : "var(--muted-foreground)" }}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
               <polyline points="17 8 12 3 7 8" />
               <line x1="12" y1="3" x2="12" y2="15" />

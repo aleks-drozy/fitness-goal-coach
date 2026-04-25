@@ -4,9 +4,19 @@ interface NutritionNoteProps {
 
 export function NutritionNote({ note }: NutritionNoteProps) {
   return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 space-y-1">
-      <p className="text-xs uppercase tracking-widest text-zinc-500">Nutrition (general)</p>
-      <p className="text-sm text-zinc-300 leading-relaxed">{note}</p>
+    <div
+      className="rounded-[var(--r-card)] border p-5 space-y-2"
+      style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+    >
+      <p
+        className="text-[0.6875rem] font-medium tracking-[0.06em] uppercase"
+        style={{ color: "var(--muted-foreground)" }}
+      >
+        Nutrition (general)
+      </p>
+      <p className="text-sm leading-relaxed" style={{ color: "var(--foreground)" }}>
+        {note}
+      </p>
     </div>
   );
 }
