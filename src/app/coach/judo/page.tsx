@@ -20,6 +20,8 @@ export default function JudoPage() {
       <StepHeader
         title="Judo training details"
         subtitle="We'll factor your judo load into the S&C recommendations so the plan supports — not fights — your mat time."
+        step={4}
+        totalSteps={5}
       />
       <JudoForm />
       <NavButtons

@@ -15,7 +15,11 @@ export default function UpsellPage() {
       <div className="text-center">
         <Link
           href="/coach/results"
-          className={cn(buttonVariants({ variant: "ghost" }), "text-zinc-500 hover:text-zinc-300 text-sm")}
+          className={cn(
+            buttonVariants({ variant: "ghost", size: "sm" }),
+            "text-sm"
+          )}
+          style={{ color: "var(--muted-foreground)" }}
         >
           ← Back to my estimate
         </Link>

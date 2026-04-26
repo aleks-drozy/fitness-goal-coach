@@ -25,6 +25,8 @@ export default function OnboardingPage() {
       <StepHeader
         title="Tell us about yourself"
         subtitle="This helps us give you a more accurate estimate. All information stays on your device."
+        step={1}
+        totalSteps={5}
       />
       <PersonalInfoForm />
       <NavButtons
