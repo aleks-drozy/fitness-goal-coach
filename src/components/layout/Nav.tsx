@@ -21,6 +21,7 @@ export function Nav() {
 
   return (
     <nav
+      aria-label="Main navigation"
       className="fixed top-0 inset-x-0 z-50 border-b"
       style={{ background: "var(--background)", borderColor: "var(--border)" }}
     >
@@ -36,35 +37,39 @@ export function Nav() {
         </Link>
 
         <div className="flex items-center gap-1">
-          {tools.map((t) => (
-            <Link
-              key={t.href}
-              href={t.href}
-              className={cn(
-                "rounded-[var(--r-button)] px-3 py-1.5 text-[0.8125rem] transition-colors",
-                pathname.startsWith(t.href)
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {t.label}
-            </Link>
-          ))}
-          <div className="mx-1 h-4 w-px" style={{ background: "var(--border)" }} />
-          {protected_.map((t) => (
-            <Link
-              key={t.href}
-              href={t.href}
-              className={cn(
-                "rounded-[var(--r-button)] px-3 py-1.5 text-[0.8125rem] transition-colors",
-                pathname === t.href
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {t.label}
-            </Link>
-          ))}
+          {tools.map((t) => {
+            const active = pathname.startsWith(t.href);
+            return (
+              <Link
+                key={t.href}
+                href={t.href}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "rounded-[var(--r-button)] px-3 py-1.5 text-[0.8125rem] transition-colors",
+                  active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {t.label}
+              </Link>
+            );
+          })}
+          <div aria-hidden="true" className="mx-1 h-4 w-px" style={{ background: "var(--border)" }} />
+          {protected_.map((t) => {
+            const active = pathname.startsWith(t.href);
+            return (
+              <Link
+                key={t.href}
+                href={t.href}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "rounded-[var(--r-button)] px-3 py-1.5 text-[0.8125rem] transition-colors",
+                  active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {t.label}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </nav>
