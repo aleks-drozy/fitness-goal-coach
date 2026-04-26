@@ -15,6 +15,7 @@ import { NutritionNote } from "@/components/results/NutritionNote";
 import { Disclaimer } from "@/components/results/Disclaimer";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
 
 export default function ResultsPage() {
   const { state } = useWizard();
@@ -22,10 +23,30 @@ export default function ResultsPage() {
   const [result, setResult] = useState<EstimateResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
 
   useEffect(() => {
     fetchEstimate(state)
-      .then(setResult)
+      .then(async (r) => {
+        setResult(r);
+        try {
+          const supabase = createClient();
+          const { data: { user } } = await supabase.auth.getUser();
+          setIsLoggedIn(!!user);
+          if (user) {
+            await supabase.from("profiles").upsert({
+              id: user.id,
+              wizard_state: {
+                ...state,
+                photos: { consentGiven: state.photos.consentGiven, currentPhotoBase64: null, goalPhotoBase64: null },
+              },
+              estimate_result: r,
+            });
+          }
+        } catch {
+          setIsLoggedIn(false);
+        }
+      })
       .catch(() => setError("Something went wrong generating your estimate. Please try again."))
       .finally(() => setLoading(false));
   }, []);
@@ -131,6 +152,47 @@ export default function ResultsPage() {
                 See what's included in Premium →
               </Link>
             </motion.div>
+
+            {isLoggedIn === false && (
+              <motion.div variants={fadeUp}>
+                <div
+                  className="rounded-[var(--r-card)] border p-5 text-center"
+                  style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+                >
+                  <p className="text-[0.875rem] font-medium">Save your results</p>
+                  <p className="mt-1 text-[0.8125rem]" style={{ color: "var(--muted-foreground)" }}>
+                    Create a free account to track weekly progress and generate a full training plan.
+                  </p>
+                  <Link
+                    href="/signup"
+                    className={cn(buttonVariants({ variant: "outline", size: "sm" }), "mt-4")}
+                  >
+                    Create free account
+                  </Link>
+                </div>
+              </motion.div>
+            )}
+
+            {isLoggedIn === true && (
+              <motion.div variants={fadeUp}>
+                <div
+                  className="rounded-[var(--r-card)] border p-5"
+                  style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+                >
+                  <p className="text-[0.8125rem] font-medium" style={{ color: "var(--success)" }}>
+                    Results saved to your account
+                  </p>
+                  <div className="mt-3 flex gap-2">
+                    <Link href="/dashboard" className={cn(buttonVariants({ size: "sm" }), "flex-1")}>
+                      Go to dashboard
+                    </Link>
+                    <Link href="/plan" className={cn(buttonVariants({ variant: "outline", size: "sm" }), "flex-1")}>
+                      Generate plan
+                    </Link>
+                  </div>
+                </div>
+              </motion.div>
+            )}
           </div>
         </motion.div>
       )}
