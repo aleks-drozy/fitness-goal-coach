@@ -5,7 +5,18 @@ import { WizardState, EstimateResult } from "@/lib/types";
 
 const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
+// This route is intentionally public (wizard runs before account creation).
+// Abuse mitigation: set a spending cap in the Groq dashboard, and enforce a
+// request body size limit so the prompt can't be bloated arbitrarily.
+export const maxDuration = 30;
+
 export async function POST(req: NextRequest) {
+  // Reject oversized payloads (wizard state should never exceed ~10 KB)
+  const contentLength = req.headers.get("content-length");
+  if (contentLength && parseInt(contentLength, 10) > 10_000) {
+    return NextResponse.json({ error: "Request too large" }, { status: 413 });
+  }
+
   const body = await req.json() as { state: WizardState };
   const { state } = body;
 

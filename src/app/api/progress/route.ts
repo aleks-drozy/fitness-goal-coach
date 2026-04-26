@@ -11,7 +11,19 @@ export async function POST(req: NextRequest) {
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { weekNumber, currentWeight, notes } = await req.json();
+  const body = await req.json();
+  const { weekNumber, currentWeight, notes } = body;
+
+  // Input validation — prevent garbage data from reaching the DB and Groq prompt
+  if (
+    !Number.isInteger(weekNumber) || weekNumber < 1 || weekNumber > 520 ||
+    typeof currentWeight !== "number" || currentWeight < 20 || currentWeight > 500 ||
+    isNaN(currentWeight)
+  ) {
+    return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+  }
+  // Cap notes length to prevent prompt injection and DB abuse
+  const safeNotes = typeof notes === "string" ? notes.slice(0, 1000) : "";
 
   const [{ data: profile }, { data: previousEntries }] = await Promise.all([
     supabase.from("profiles").select("wizard_state, estimate_result").eq("id", user.id).maybeSingle(),
@@ -46,7 +58,7 @@ ${prevText}
 
 Current check-in (Week ${weekNumber}):
 Weight: ${currentWeight}kg
-Notes: "${notes}"
+Notes: "${safeNotes}"
 
 Return ONLY valid JSON (no markdown fences):
 {
@@ -80,7 +92,7 @@ Return ONLY valid JSON (no markdown fences):
       user_id: user.id,
       week_number: weekNumber,
       current_weight: currentWeight,
-      notes,
+      notes: safeNotes,
       ai_feedback: groqResponse.feedback,
       on_track: groqResponse.on_track,
     })
