@@ -77,60 +77,93 @@ body {
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/* ── Light theme (default :root) ──────────────── */
 :root {
-  /* ── Core palette ──────────────────────────── */
-  /* Background: near-black with a cool blue-indigo tint — focused, clear-headed */
+  --background: oklch(0.975 0.003 255);
+  --foreground: oklch(0.12 0.008 255);
+  --card: oklch(0.99 0.002 255);
+  --card-foreground: oklch(0.12 0.008 255);
+  --popover: oklch(0.97 0.003 255);
+  --popover-foreground: oklch(0.12 0.008 255);
+  --primary: oklch(0.62 0.19 58);
+  --primary-foreground: oklch(0.99 0.002 255);
+  --secondary: oklch(0.94 0.004 255);
+  --secondary-foreground: oklch(0.12 0.008 255);
+  --muted: oklch(0.94 0.004 255);
+  --muted-foreground: oklch(0.48 0.007 255);
+  --accent: oklch(0.62 0.19 58 / 10%);
+  --accent-foreground: oklch(0.12 0.008 255);
+  --destructive: oklch(0.55 0.22 27);
+  --border: oklch(0.88 0.005 255);
+  --input: oklch(0.96 0.003 255);
+  --ring: oklch(0.62 0.19 58);
+  --surface: oklch(0.97 0.003 255);
+  --surface-raised: oklch(0.94 0.004 255);
+  --border-strong: oklch(0.72 0.006 255);
+  --accent-dim: oklch(0.62 0.19 58 / 10%);
+  --success: oklch(0.52 0.16 148);
+  --success-dim: oklch(0.52 0.16 148 / 12%);
+  --warn: oklch(0.58 0.17 82);
+  --warn-dim: oklch(0.58 0.17 82 / 12%);
+  --chart-1: oklch(0.62 0.19 58);
+  --chart-2: oklch(0.52 0.16 148);
+  --chart-3: oklch(0.5 0.007 255);
+  --chart-4: oklch(0.7 0.005 255);
+  --chart-5: oklch(0.88 0.005 255);
+  --sidebar: oklch(0.97 0.003 255);
+  --sidebar-foreground: oklch(0.12 0.008 255);
+  --sidebar-primary: oklch(0.62 0.19 58);
+  --sidebar-primary-foreground: oklch(0.99 0.002 255);
+  --sidebar-accent: oklch(0.94 0.004 255);
+  --sidebar-accent-foreground: oklch(0.12 0.008 255);
+  --sidebar-border: oklch(0.88 0.005 255);
+  --sidebar-ring: oklch(0.62 0.19 58);
+  --radius: 0.625rem;
+  --r-input: 0.5rem;
+  --r-card: 0.875rem;
+  --r-button: 0.625rem;
+  --r-pill: 9999px;
+  --dur-instant: 120ms;
+  --dur-fast: 200ms;
+  --dur-medium: 320ms;
+  --dur-slow: 480ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
+}
+
+/* ── Dark theme ────────────────────────────────── */
+.dark {
   --background: oklch(0.097 0.006 255);
   --foreground: oklch(0.935 0.004 255);
-
-  /* Surfaces */
   --card: oklch(0.135 0.005 255);
   --card-foreground: oklch(0.935 0.004 255);
   --popover: oklch(0.18 0.007 255);
   --popover-foreground: oklch(0.935 0.004 255);
-
-  /* Brand: warm amber — the color of effort and metabolic heat */
   --primary: oklch(0.72 0.19 58);
   --primary-foreground: oklch(0.14 0.015 255);
-
-  /* Secondary surfaces */
   --secondary: oklch(0.165 0.006 255);
   --secondary-foreground: oklch(0.935 0.004 255);
-
-  /* Muted */
   --muted: oklch(0.165 0.006 255);
   --muted-foreground: oklch(0.58 0.007 255);
-
-  /* Accent: amber at 12% — tinted surfaces, selection highlight */
   --accent: oklch(0.72 0.19 58 / 12%);
   --accent-foreground: oklch(0.935 0.004 255);
-
-  /* Semantic */
   --destructive: oklch(0.62 0.22 27);
   --border: oklch(0.23 0.007 255);
   --input: oklch(0.135 0.005 255);
   --ring: oklch(0.72 0.19 58);
-
-  /* ── Extended semantic tokens ─────────────── */
   --surface: oklch(0.135 0.005 255);
   --surface-raised: oklch(0.165 0.006 255);
   --border-strong: oklch(0.32 0.008 255);
   --accent-dim: oklch(0.72 0.19 58 / 12%);
-
-  /* Status colors */
   --success: oklch(0.68 0.16 148);
   --success-dim: oklch(0.68 0.16 148 / 15%);
   --warn: oklch(0.76 0.17 82);
   --warn-dim: oklch(0.76 0.17 82 / 15%);
-
-  /* Chart */
   --chart-1: oklch(0.72 0.19 58);
   --chart-2: oklch(0.68 0.16 148);
   --chart-3: oklch(0.62 0.007 255);
   --chart-4: oklch(0.44 0.005 255);
   --chart-5: oklch(0.23 0.007 255);
-
-  /* Sidebar */
   --sidebar: oklch(0.135 0.005 255);
   --sidebar-foreground: oklch(0.935 0.004 255);
   --sidebar-primary: oklch(0.72 0.19 58);
@@ -139,21 +172,6 @@ body {
   --sidebar-accent-foreground: oklch(0.935 0.004 255);
   --sidebar-border: oklch(0.23 0.007 255);
   --sidebar-ring: oklch(0.72 0.19 58);
-
-  /* ── Radius ───────────────────────────────── */
-  --radius: 0.625rem;
-  --r-input: 0.5rem;
-  --r-card: 0.875rem;
-  --r-button: 0.625rem;
-  --r-pill: 9999px;
-
-  /* ── Motion ───────────────────────────────── */
-  --dur-instant: 120ms;
-  --dur-fast: 200ms;
-  --dur-medium: 320ms;
-  --dur-slow: 480ms;
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
 }
 
 /* Collapse all durations to zero for users who prefer less motion */

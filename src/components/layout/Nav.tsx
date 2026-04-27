@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 const tools = [
   { label: "Calculator", href: "/tools/calculator" },
@@ -71,6 +72,8 @@ export function Nav() {
               </Link>
             );
           })}
+          <div aria-hidden="true" className="mx-1 h-4 w-px" style={{ background: "var(--border)" }} />
+          <ThemeToggle />
         </div>
       </div>
     </nav>

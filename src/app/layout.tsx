@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { WizardProvider } from "@/context/WizardContext";
 import { Nav } from "@/components/layout/Nav";
+import { ThemeProvider } from "next-themes";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -13,12 +14,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
       <body className="bg-background text-foreground font-sans antialiased">
-        <WizardProvider>
-          <Nav />
-          <div className="pt-12">{children}</div>
-        </WizardProvider>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+          <WizardProvider>
+            <Nav />
+            <div className="pt-12">{children}</div>
+          </WizardProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
