@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { ProgressForm } from "@/components/progress/ProgressForm";
 import { EntryTimeline } from "@/components/progress/EntryTimeline";
@@ -30,6 +31,9 @@ export default async function ProgressPage() {
             Progress
           </p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight">Weekly check-in</h1>
+          <Link href="/progress/photos" className="mt-2 inline-block text-[0.8125rem]" style={{ color: "var(--primary)" }}>
+            Photo comparison →
+          </Link>
           <p className="mt-1.5 text-[0.875rem]" style={{ color: "var(--muted-foreground)" }}>
             Log your weight and how the week went. Your AI coach will review your trajectory.
           </p>
