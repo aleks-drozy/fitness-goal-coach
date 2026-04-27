@@ -1,14 +1,16 @@
 import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 import { PhotoComparison } from "@/components/progress/PhotoComparison";
 
 export default async function PhotosPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
 
   const { data: lastAnalysis } = await supabase
     .from("photo_analyses")
     .select("created_at")
-    .eq("user_id", user!.id)
+    .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -28,7 +30,7 @@ export default async function PhotosPage() {
             </p>
           )}
         </div>
-        <PhotoComparison userId={user!.id} />
+        <PhotoComparison userId={user.id} />
       </div>
     </div>
   );

@@ -26,9 +26,19 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const { week1Path, currentPath } = await req.json();
+  let week1Path: string, currentPath: string;
+  try {
+    ({ week1Path, currentPath } = await req.json());
+  } catch {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
   if (!week1Path || !currentPath) {
     return NextResponse.json({ error: "Both image paths required" }, { status: 400 });
+  }
+  // Prevent accessing other users' photos — paths must be scoped to this user's folder
+  const userPrefix = `${user.id}/`;
+  if (!week1Path.startsWith(userPrefix) || !currentPath.startsWith(userPrefix)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const service = createServiceClient();
