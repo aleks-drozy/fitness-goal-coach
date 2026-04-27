@@ -12,6 +12,7 @@ const protected_ = [
   { label: "Dashboard", href: "/dashboard" },
   { label: "Progress", href: "/progress" },
   { label: "Plan", href: "/plan" },
+  { label: "Weight Cut", href: "/weight-cut" },
 ];
 
 export function Nav() {

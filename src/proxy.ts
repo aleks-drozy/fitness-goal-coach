@@ -31,7 +31,7 @@ export async function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  const isProtected = ["/dashboard", "/progress", "/plan"].some((p) =>
+  const isProtected = ["/dashboard", "/progress", "/plan", "/weight-cut"].some((p) =>
     pathname.startsWith(p)
   );
 
