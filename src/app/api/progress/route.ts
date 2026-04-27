@@ -103,5 +103,69 @@ Return ONLY valid JSON (no markdown fences):
     return NextResponse.json({ error: insertError.message }, { status: 500 });
   }
 
-  return NextResponse.json({ ...entry, revised_estimate: groqResponse.revised_estimate });
+  // Check last 3 entries for >10% deviation from expected trajectory
+  let planUpdated = false;
+
+  const { data: last3 } = await supabase
+    .from("progress_entries")
+    .select("week_number, current_weight")
+    .eq("user_id", user.id)
+    .order("week_number", { ascending: false })
+    .limit(3);
+
+  if (last3 && last3.length >= 2 && estimate && ws) {
+    const startWeight = (ws as Record<string, unknown> & { onboarding?: { weightKg?: number } })?.onboarding?.weightKg;
+    const goalType = (ws as Record<string, unknown> & { questionnaire?: { goalType?: string } })?.questionnaire?.goalType;
+    const timeframeMax = (estimate as Record<string, unknown> & { timeframeMax?: number })?.timeframeMax;
+
+    if (startWeight && timeframeMax) {
+      const expectedWeeklyDelta =
+        goalType === "fat_loss" ? -0.5 : goalType === "muscle_gain" ? 0.25 : -0.25;
+      const expectedWeight = startWeight + expectedWeeklyDelta * weekNumber;
+      const totalExpectedChange = Math.abs(expectedWeight - startWeight) || 1;
+      const deviation = Math.abs(currentWeight - expectedWeight) / totalExpectedChange;
+
+      if (deviation > 0.1 && weekNumber >= 2) {
+        const planPrompt = `You are an expert fitness coach. A user's progress is deviating from their plan. Update their training plan.
+
+User goal: ${goalType ?? "general fitness"}
+Starting weight: ${startWeight}kg
+Expected weight at week ${weekNumber}: ${expectedWeight.toFixed(1)}kg
+Actual weight: ${currentWeight}kg
+Deviation: ${(deviation * 100).toFixed(0)}%
+
+Return ONLY valid JSON (no markdown fences) matching exactly:
+{
+  "weekly_schedule": [{ "day": "string", "focus": "string", "exercises": ["string"] }],
+  "nutrition": { "calories_guidance": "string", "protein_target": "string", "meal_timing": "string" },
+  "judo_specific": null,
+  "recovery": { "sleep": "string", "active_recovery": "string" }
+}`;
+
+        const planCompletion = await groq.chat.completions.create({
+          model: "llama-3.3-70b-versatile",
+          messages: [{ role: "user", content: planPrompt }],
+          temperature: 0.4,
+          max_tokens: 2048,
+        });
+
+        const planRaw = (planCompletion.choices[0].message.content ?? "")
+          .trim().replace(/^```json\n?/, "").replace(/\n?```$/, "");
+
+        try {
+          const newPlan = JSON.parse(planRaw);
+          await supabase.from("fitness_plans").insert({ user_id: user.id, plan: newPlan });
+          planUpdated = true;
+        } catch {
+          // best-effort — silently skip if plan JSON parse fails
+        }
+      }
+    }
+  }
+
+  return NextResponse.json({
+    ...entry,
+    revised_estimate: groqResponse.revised_estimate,
+    plan_updated: planUpdated,
+  });
 }

@@ -15,6 +15,7 @@ interface SuccessData {
   on_track: boolean;
   revised_estimate: string;
   ai_feedback: string;
+  plan_updated: boolean;
 }
 
 export function ProgressForm({ nextWeek }: ProgressFormProps) {
@@ -52,6 +53,7 @@ export function ProgressForm({ nextWeek }: ProgressFormProps) {
       on_track: data.on_track,
       revised_estimate: data.revised_estimate,
       ai_feedback: data.ai_feedback,
+      plan_updated: data.plan_updated ?? false,
     });
     router.refresh();
   }
@@ -82,6 +84,17 @@ export function ProgressForm({ nextWeek }: ProgressFormProps) {
             style={{ borderColor: "var(--border-strong)", color: "var(--foreground)" }}
           >
             Revised estimate: <span className="font-medium">{success.revised_estimate}</span>
+          </div>
+        )}
+
+        {success.plan_updated && (
+          <div
+            className="rounded-[var(--r-input)] border px-3 py-2.5 text-[0.8125rem]"
+            style={{ borderColor: "var(--primary)", background: "var(--accent-dim)" }}
+          >
+            <span className="font-medium" style={{ color: "var(--primary)" }}>Your plan was automatically updated</span>
+            {" — "}
+            <a href="/plan" style={{ color: "var(--primary)", textDecoration: "underline" }}>view updated plan</a>
           </div>
         )}
 
