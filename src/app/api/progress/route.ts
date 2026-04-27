@@ -103,17 +103,10 @@ Return ONLY valid JSON (no markdown fences):
     return NextResponse.json({ error: insertError.message }, { status: 500 });
   }
 
-  // Check last 3 entries for >10% deviation from expected trajectory
+  // Check if current weight deviates >10% from the total planned programme change
   let planUpdated = false;
 
-  const { data: last3 } = await supabase
-    .from("progress_entries")
-    .select("week_number, current_weight")
-    .eq("user_id", user.id)
-    .order("week_number", { ascending: false })
-    .limit(3);
-
-  if (last3 && last3.length >= 2 && estimate && ws) {
+  if (weekNumber >= 2 && estimate && ws) {
     const startWeight = (ws as Record<string, unknown> & { onboarding?: { weightKg?: number } })?.onboarding?.weightKg;
     const goalType = (ws as Record<string, unknown> & { questionnaire?: { goalType?: string } })?.questionnaire?.goalType;
     const timeframeMax = (estimate as Record<string, unknown> & { timeframeMax?: number })?.timeframeMax;
@@ -122,10 +115,11 @@ Return ONLY valid JSON (no markdown fences):
       const expectedWeeklyDelta =
         goalType === "fat_loss" ? -0.5 : goalType === "muscle_gain" ? 0.25 : -0.25;
       const expectedWeight = startWeight + expectedWeeklyDelta * weekNumber;
-      const totalExpectedChange = Math.abs(expectedWeight - startWeight) || 1;
-      const deviation = Math.abs(currentWeight - expectedWeight) / totalExpectedChange;
+      // Denominator: total planned change over the full programme (constant, not week-dependent)
+      const totalProgrammeChange = Math.abs(expectedWeeklyDelta * timeframeMax * 4.33) || 1;
+      const deviation = Math.abs(currentWeight - expectedWeight) / totalProgrammeChange;
 
-      if (deviation > 0.1 && weekNumber >= 2) {
+      if (deviation > 0.1) {
         const planPrompt = `You are an expert fitness coach. A user's progress is deviating from their plan. Update their training plan.
 
 User goal: ${goalType ?? "general fitness"}
