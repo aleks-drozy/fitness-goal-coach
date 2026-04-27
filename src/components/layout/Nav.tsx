@@ -14,6 +14,7 @@ const protected_ = [
   { label: "Progress", href: "/progress" },
   { label: "Plan", href: "/plan" },
   { label: "Weight Cut", href: "/weight-cut" },
+  { label: "Settings", href: "/settings/account" },
 ];
 
 export function Nav() {
