@@ -13,6 +13,7 @@ import { ReasoningBlock } from "@/components/results/ReasoningBlock";
 import { TrainingGuidance } from "@/components/results/TrainingGuidance";
 import { NutritionNote } from "@/components/results/NutritionNote";
 import { Disclaimer } from "@/components/results/Disclaimer";
+import { ShareCard } from "@/components/results/ShareCard";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -144,6 +145,11 @@ export default function ResultsPage() {
             <motion.div variants={fadeUp}>
               <Disclaimer />
             </motion.div>
+            {result && (
+              <motion.div variants={fadeUp} className="flex justify-center">
+                <ShareCard result={result} state={state} />
+              </motion.div>
+            )}
             <motion.div variants={fadeUp} className="pt-2">
               <Link
                 href="/coach/upsell"
