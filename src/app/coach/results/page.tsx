@@ -30,22 +30,21 @@ export default function ResultsPage() {
     fetchEstimate(state)
       .then(async (r) => {
         setResult(r);
-        try {
-          const supabase = createClient();
-          const { data: { user } } = await supabase.auth.getUser();
-          setIsLoggedIn(!!user);
-          if (user) {
-            await supabase.from("profiles").upsert({
-              id: user.id,
-              wizard_state: {
-                ...state,
-                photos: { consentGiven: state.photos.consentGiven, currentPhotoBase64: null, goalPhotoBase64: null },
-              },
-              estimate_result: r,
-            });
-          }
-        } catch {
-          setIsLoggedIn(false);
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        setIsLoggedIn(!!user);
+        if (user) {
+          // Best-effort save — failure doesn't affect displayed results
+          supabase.from("profiles").upsert({
+            id: user.id,
+            wizard_state: {
+              ...state,
+              photos: { consentGiven: state.photos.consentGiven, currentPhotoBase64: null, goalPhotoBase64: null },
+            },
+            estimate_result: r,
+          }).then(({ error }) => {
+            if (error) console.error("Profile upsert failed:", error.message);
+          });
         }
       })
       .catch(() => setError("Something went wrong generating your estimate. Please try again."))
