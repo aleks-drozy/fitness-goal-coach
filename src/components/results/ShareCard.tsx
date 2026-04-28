@@ -22,6 +22,16 @@ export function ShareCard({ result, state }: ShareCardProps) {
       scale: 2,
       useCORS: true,
       logging: false,
+      onclone: (clonedDoc) => {
+        // html2canvas parses computed colors from ancestor elements (body, html)
+        // which use oklch() — a color function html2canvas doesn't support.
+        // The capture target is 100% inline-styled, so stripping all stylesheets
+        // from the clone leaves only safe hex inline styles.
+        clonedDoc
+          .querySelectorAll('style, link[rel="stylesheet"]')
+          .forEach((n) => n.remove());
+        clonedDoc.body.style.cssText = "margin:0;padding:0;background:#0f111a";
+      },
     });
 
     const link = document.createElement("a");
