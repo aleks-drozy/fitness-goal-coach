@@ -64,14 +64,14 @@ Return ONLY valid JSON (no markdown fences):
 {
   "on_track": true or false,
   "revised_estimate": "X-Y months" or "On track with original estimate",
-  "feedback": "2-3 sentences of specific, honest, actionable coaching feedback based on their actual progress data"
+  "feedback": "4-6 sentences of specific, evidence-based coaching feedback. Reference their actual weight numbers and trajectory. If they shared notes, respond directly to what they said. Give one concrete action to take this week. Be direct but supportive — not generic."
 }`;
 
   const completion = await groq.chat.completions.create({
     model: "llama-3.3-70b-versatile",
     messages: [{ role: "user", content: prompt }],
     temperature: 0.4,
-    max_tokens: 512,
+    max_tokens: 1024,
   });
 
   const rawText = (completion.choices[0].message.content ?? "")

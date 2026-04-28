@@ -34,8 +34,17 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ sent: 0 });
   }
 
-  // Get emails via admin API
-  const { data: { users } } = await supabase.auth.admin.listUsers();
+  // Get emails via admin API — paginate to handle >1000 users
+  const users: { id: string; email?: string }[] = [];
+  let page = 1;
+  const perPage = 1000;
+  while (true) {
+    const { data, error } = await supabase.auth.admin.listUsers({ page, perPage });
+    if (error || !data?.users?.length) break;
+    users.push(...data.users);
+    if (data.users.length < perPage) break;
+    page++;
+  }
   const remindEmails = users
     .filter((u) => toRemind.some((p: { id: string }) => p.id === u.id))
     .map((u) => u.email)
