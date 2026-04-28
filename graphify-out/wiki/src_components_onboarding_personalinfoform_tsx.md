@@ -1,0 +1,22 @@
+# PersonalInfoForm
+
+- **ID:** `src_components_onboarding_personalinfoform_tsx`
+- **Type:** File
+- **File:** `.\src\components\onboarding\PersonalInfoForm.tsx`
+- **Community:** 4 (PersonalInfoForm())
+
+## Relationships
+
+- src_components_onboarding_personalinfoform_tsx → src_components_onboarding_personalinfoform_tsx_import_context_wizardcontext_usewizard (imports, Extracted)
+- src_components_onboarding_personalinfoform_tsx → src_components_onboarding_personalinfoform_tsx_import_components_ui_label_label (imports, Extracted)
+- src_components_onboarding_personalinfoform_tsx → src_components_onboarding_personalinfoform_tsx_import_components_ui_input_input (imports, Extracted)
+- src_components_onboarding_personalinfoform_tsx → src_components_onboarding_personalinfoform_tsx_import_components_ui_select_select (imports, Extracted)
+- src_components_onboarding_personalinfoform_tsx → src_components_onboarding_personalinfoform_tsx_import_components_ui_select_selectcontent (imports, Extracted)
+- src_components_onboarding_personalinfoform_tsx → src_components_onboarding_personalinfoform_tsx_import_components_ui_select_selectitem (imports, Extracted)
+- src_components_onboarding_personalinfoform_tsx → src_components_onboarding_personalinfoform_tsx_import_components_ui_select_selecttrigger (imports, Extracted)
+- src_components_onboarding_personalinfoform_tsx → src_components_onboarding_personalinfoform_tsx_import_components_ui_select_selectvalue (imports, Extracted)
+- src_components_onboarding_personalinfoform_tsx → src_components_onboarding_personalinfoform_tsx_import_lib_types_sex (imports, Extracted)
+- src_components_onboarding_personalinfoform_tsx → src_components_onboarding_personalinfoform_tsx_import_lib_types_experiencelevel (imports, Extracted)
+- src_components_onboarding_personalinfoform_tsx → src_components_onboarding_personalinfoform_tsx_import_lib_types_activitylevel (imports, Extracted)
+- src_components_onboarding_personalinfoform_tsx → src_components_onboarding_personalinfoform_tsx_personalinfoform (defines, Extracted)
+

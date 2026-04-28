@@ -79,6 +79,7 @@ body {
 
 /* ── Light theme (default :root) ──────────────── */
 :root {
+  color-scheme: light;
   --background: oklch(0.975 0.003 255);
   --foreground: oklch(0.12 0.008 255);
   --card: oklch(0.99 0.002 255);
@@ -133,6 +134,7 @@ body {
 
 /* ── Dark theme ────────────────────────────────── */
 .dark {
+  color-scheme: dark;
   --background: oklch(0.097 0.006 255);
   --foreground: oklch(0.935 0.004 255);
   --card: oklch(0.135 0.005 255);
