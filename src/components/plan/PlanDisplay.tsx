@@ -5,20 +5,20 @@ interface WeekDay {
 }
 
 interface FitnessPlan {
-  weekly_schedule: WeekDay[];
-  nutrition: {
-    calories_guidance: string;
-    protein_target: string;
-    meal_timing: string;
-  };
-  judo_specific: {
-    technical_focus: string;
-    conditioning_priority: string;
+  weekly_schedule?: WeekDay[];
+  nutrition?: {
+    calories_guidance?: string;
+    protein_target?: string;
+    meal_timing?: string;
   } | null;
-  recovery: {
-    sleep: string;
-    active_recovery: string;
-  };
+  judo_specific?: {
+    technical_focus?: string;
+    conditioning_priority?: string;
+  } | null;
+  recovery?: {
+    sleep?: string;
+    active_recovery?: string;
+  } | null;
 }
 
 interface PlanDisplayProps {
@@ -81,9 +81,9 @@ export function PlanDisplay({ plan }: PlanDisplayProps) {
           style={{ borderColor: "var(--border)", background: "var(--surface)" }}
         >
           {[
-            { label: "Calories", value: plan.nutrition.calories_guidance },
-            { label: "Protein", value: plan.nutrition.protein_target },
-            { label: "Meal timing", value: plan.nutrition.meal_timing },
+            { label: "Calories", value: plan.nutrition?.calories_guidance ?? "—" },
+            { label: "Protein", value: plan.nutrition?.protein_target ?? "—" },
+            { label: "Meal timing", value: plan.nutrition?.meal_timing ?? "—" },
           ].map(({ label, value }) => (
             <div key={label} className="px-4 py-3 space-y-0.5">
               <p className="text-[0.75rem] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
@@ -107,13 +107,13 @@ export function PlanDisplay({ plan }: PlanDisplayProps) {
               <p className="text-[0.75rem] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
                 Technical focus
               </p>
-              <p className="text-[0.875rem]">{plan.judo_specific.technical_focus}</p>
+              <p className="text-[0.875rem]">{plan.judo_specific?.technical_focus ?? "—"}</p>
             </div>
             <div className="px-4 py-3 space-y-0.5">
               <p className="text-[0.75rem] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
                 Conditioning priority
               </p>
-              <p className="text-[0.875rem]">{plan.judo_specific.conditioning_priority}</p>
+              <p className="text-[0.875rem]">{plan.judo_specific?.conditioning_priority ?? "—"}</p>
             </div>
           </div>
         </div>
@@ -130,13 +130,13 @@ export function PlanDisplay({ plan }: PlanDisplayProps) {
             <p className="text-[0.75rem] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
               Sleep
             </p>
-            <p className="text-[0.875rem]">{plan.recovery.sleep}</p>
+            <p className="text-[0.875rem]">{plan.recovery?.sleep ?? "—"}</p>
           </div>
           <div className="px-4 py-3 space-y-0.5">
             <p className="text-[0.75rem] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
               Active recovery
             </p>
-            <p className="text-[0.875rem]">{plan.recovery.active_recovery}</p>
+            <p className="text-[0.875rem]">{plan.recovery?.active_recovery ?? "—"}</p>
           </div>
         </div>
       </div>
