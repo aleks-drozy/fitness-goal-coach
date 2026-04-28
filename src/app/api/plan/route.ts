@@ -1,8 +1,69 @@
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
 import { createClient } from "@/lib/supabase/server";
+import exercises from "@/data/exercises.json";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+type Exercise = {
+  id: string;
+  name: string;
+  category: string;
+  muscleGroups: string[];
+  equipment: string;
+  difficulty: string;
+  sets?: number;
+  reps?: string;
+  duration?: string;
+};
+
+const GRAPPLING_SPORTS = new Set(["judo", "bjj", "wrestling", "mma"]);
+
+function buildExercisePool(isGrappling: boolean, workoutSetting: string): string {
+  const typed = exercises as Exercise[];
+
+  const strength = typed
+    .filter((e) => e.category === "Strength")
+    .filter((e) => {
+      if (workoutSetting === "home") {
+        return e.equipment === "Bodyweight" || e.equipment === "Dumbbell";
+      }
+      return true;
+    })
+    .map((e) => `${e.name} (${e.sets ? `${e.sets}×` : ""}${e.reps ?? e.duration ?? ""}, ${e.equipment})`);
+
+  const cardio = typed
+    .filter((e) => e.category === "Cardio")
+    .map((e) => `${e.name} (${e.sets ? `${e.sets}×` : ""}${e.duration ?? e.reps ?? ""}, ${e.equipment})`);
+
+  const mobility = typed
+    .filter((e) => e.category === "Mobility")
+    .map((e) => `${e.name} (${e.duration ?? ""})`);
+
+  const recovery = typed
+    .filter((e) => e.category === "Recovery")
+    .map((e) => `${e.name} (${e.duration ?? ""})`);
+
+  let pool = `
+EXERCISE LIBRARY — use these exact names in the plan so users can look them up:
+
+Strength: ${strength.join(" | ")}
+
+Cardio: ${cardio.join(" | ")}
+
+Mobility: ${mobility.join(" | ")}
+
+Recovery: ${recovery.join(" | ")}`;
+
+  if (isGrappling) {
+    const grappling = typed
+      .filter((e) => e.category === "Judo Conditioning")
+      .map((e) => `${e.name} (${e.sets ? `${e.sets}×` : ""}${e.reps ?? e.duration ?? ""}, ${e.equipment})`);
+    pool += `\n\nGrappling Conditioning: ${grappling.join(" | ")}`;
+  }
+
+  return pool;
+}
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -22,37 +83,45 @@ export async function POST(req: NextRequest) {
   const questionnaire = (ws?.questionnaire ?? {}) as Record<string, unknown>;
   const judo = (ws?.judo ?? {}) as Record<string, unknown>;
 
-  const isJudo = questionnaire.sport === "judo";
-  const judoLine = isJudo
-    ? `\nJudo: ${judo.sessionsPerWeek} sessions/week, ${judo.intensity} intensity${judo.hasCompetitionSoon ? ", competition within 8 weeks" : ""}`
+  const sport = String(questionnaire.sport ?? "none");
+  const isGrappling = GRAPPLING_SPORTS.has(sport);
+  const workoutSetting = String(questionnaire.workoutSetting ?? "gym");
+
+  const grapplingLine = isGrappling
+    ? `\nGrappling sport (${sport}): ${judo.sessionsPerWeek} sessions/week, ${judo.intensity} intensity${judo.hasCompetitionSoon ? ", competition within 8 weeks" : ""}`
     : "";
+
+  const exercisePool = buildExercisePool(isGrappling, workoutSetting);
 
   const prompt = `You are an expert fitness and strength coach. Create a detailed, personalized weekly training plan.
 
 User profile:
 - Goal: ${questionnaire.goalType ?? "general fitness"}
-- Sport: ${questionnaire.sport ?? "none"}${judoLine}
+- Sport: ${sport}${grapplingLine}
 - Experience: ${onboarding.experience ?? "intermediate"}
 - Activity level: ${onboarding.activityLevel ?? "moderate"}
 - Age: ${onboarding.age ?? "unknown"}, Sex: ${onboarding.sex ?? "unknown"}
 - Current weight: ${onboarding.weightKg ?? "unknown"}kg
-- Workout setting: ${questionnaire.workoutSetting ?? "gym"}
+- Workout setting: ${workoutSetting}
 - Injuries/limitations: ${questionnaire.injuries || "none"}
+${exercisePool}
+
+IMPORTANT: Use exercise names exactly as they appear in the library above. Do not invent exercise names not listed. Format each exercise as "Exercise Name — sets×reps" or "Exercise Name — duration".
 
 Return ONLY valid JSON (no markdown fences):
 {
   "weekly_schedule": [
-    { "day": "Day name", "focus": "Session focus", "exercises": ["Exercise with sets/reps", "Exercise with sets/reps"] }
+    { "day": "Day name", "focus": "Session focus", "exercises": ["Exercise Name — 3×8-10", "Exercise Name — 30-60s"] }
   ],
   "nutrition": {
     "calories_guidance": "Concise calorie strategy for their goal",
     "protein_target": "Daily protein target with rationale",
     "meal_timing": "When to eat relative to training"
   },
-  "judo_specific": ${isJudo ? '{ "technical_focus": "Which judo techniques to prioritize", "conditioning_priority": "Specific conditioning focus" }' : "null"},
+  "judo_specific": ${isGrappling ? `{ "technical_focus": "Which techniques to prioritize for ${sport}", "conditioning_priority": "Specific conditioning focus for ${sport}" }` : "null"},
   "recovery": {
     "sleep": "Sleep recommendation",
-    "active_recovery": "Active recovery activities"
+    "active_recovery": "Active recovery activities from the library"
   }
 }`;
 
