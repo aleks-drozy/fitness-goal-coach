@@ -4,6 +4,7 @@ export type ActivityLevel = "sedentary" | "light" | "moderate" | "active" | "ver
 export type GoalType = "fat_loss" | "muscle_gain" | "recomposition";
 export type WorkoutSetting = "gym" | "home" | "both";
 export type JudoIntensity = "light" | "moderate" | "hard";
+export type Sport = "none" | "judo" | "bjj" | "boxing" | "mma" | "wrestling" | "running" | "cycling" | "football" | "other";
 
 export interface OnboardingData {
   name: string;
@@ -25,7 +26,7 @@ export interface QuestionnaireData {
   goalType: GoalType | null;
   workoutSetting: WorkoutSetting | null;
   injuries: string;
-  sport: "judo" | "none";
+  sport: Sport;
 }
 
 export interface JudoData {
