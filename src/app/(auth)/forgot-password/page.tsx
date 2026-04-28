@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Zap } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
@@ -9,12 +8,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-export default function LoginPage() {
-  const router = useRouter()
+export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [sent, setSent] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -22,16 +20,45 @@ export default function LoginPage() {
     setError(null)
 
     const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${location.origin}/auth/callback?next=/settings/account`,
+    })
 
+    setLoading(false)
     if (error) {
       setError(error.message)
-      setLoading(false)
       return
     }
+    setSent(true)
+  }
 
-    router.refresh()
-    router.push("/dashboard")
+  if (sent) {
+    return (
+      <div className="w-full max-w-sm text-center">
+        <div
+          className="rounded-[var(--r-card)] border border-border bg-card px-8 py-12"
+          style={{ boxShadow: "0 0 0 1px oklch(0.72 0.19 58 / 4%), 0 8px 32px oklch(0 0 0 / 28%)" }}
+        >
+          <div
+            className="mx-auto mb-5 flex size-12 items-center justify-center rounded-full"
+            style={{ background: "var(--success-dim)" }}
+          >
+            <Zap size={20} color="var(--success)" />
+          </div>
+          <h2 className="text-lg font-semibold">Check your email</h2>
+          <p className="mt-2 text-[0.875rem] text-muted-foreground">
+            We sent a reset link to{" "}
+            <span className="text-foreground">{email}</span>. It expires in 1 hour.
+          </p>
+          <Link
+            href="/login"
+            className="mt-6 inline-block text-[0.875rem] text-primary transition-opacity hover:opacity-80"
+          >
+            Back to sign in
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -47,9 +74,9 @@ export default function LoginPage() {
           >
             <Zap size={18} fill="var(--primary-foreground)" color="var(--primary-foreground)" />
           </div>
-          <h1 className="text-xl font-semibold tracking-tight">Welcome back</h1>
+          <h1 className="text-xl font-semibold tracking-tight">Reset password</h1>
           <p className="mt-1 text-[0.875rem] text-muted-foreground">
-            Sign in to your account
+            Enter your email and we&apos;ll send a reset link
           </p>
         </div>
 
@@ -67,28 +94,6 @@ export default function LoginPage() {
             />
           </div>
 
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
-              <Link
-                href="/forgot-password"
-                className="text-[0.8125rem] transition-opacity hover:opacity-80"
-                style={{ color: "var(--muted-foreground)" }}
-              >
-                Forgot password?
-              </Link>
-            </div>
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoComplete="current-password"
-            />
-          </div>
-
           {error && (
             <p
               className="rounded-[var(--r-input)] border px-3 py-2 text-[0.8125rem]"
@@ -103,18 +108,15 @@ export default function LoginPage() {
           )}
 
           <Button type="submit" size="lg" className="w-full" disabled={loading}>
-            {loading ? "Signing in…" : "Sign in"}
+            {loading ? "Sending…" : "Send reset link"}
           </Button>
         </form>
       </div>
 
       <p className="mt-5 text-center text-[0.875rem] text-muted-foreground">
-        No account?{" "}
-        <Link
-          href="/signup"
-          className="text-primary transition-opacity hover:opacity-80"
-        >
-          Create one
+        Remember your password?{" "}
+        <Link href="/login" className="text-primary transition-opacity hover:opacity-80">
+          Sign in
         </Link>
       </p>
     </div>
