@@ -18,8 +18,8 @@ export default function JudoPage() {
     <>
       <ProgressBar currentStep={4} totalSteps={5} />
       <StepHeader
-        title="Judo training details"
-        subtitle="We'll factor your judo load into the S&C recommendations so the plan supports — not fights — your mat time."
+        title="Grappling training details"
+        subtitle="We'll factor your mat load into the S&C recommendations so the plan supports — not fights — your training."
         step={4}
         totalSteps={5}
       />

@@ -17,8 +17,11 @@ export default function QuestionnairePage() {
     questionnaire.goalType !== null &&
     questionnaire.workoutSetting !== null;
 
+  const GRAPPLING_SPORTS = new Set(["judo", "bjj", "wrestling", "mma"]);
+  const isGrappling = GRAPPLING_SPORTS.has(questionnaire.sport ?? "none");
+
   const handleNext = () => {
-    if (questionnaire.sport === "judo") {
+    if (isGrappling) {
       router.push("/coach/judo");
     } else {
       router.push("/coach/results");
