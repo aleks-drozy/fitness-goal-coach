@@ -6,6 +6,23 @@ import { FeedbackCallout } from "@/components/dashboard/FeedbackCallout";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+function parseEstimate(raw: unknown): {
+  timeframeMin: number;
+  timeframeMax: number;
+  timeframeUnit: string;
+  confidenceLevel: "low" | "medium" | "high";
+} | null {
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw as Record<string, unknown>;
+  if (typeof r.timeframeMin !== "number" || typeof r.timeframeMax !== "number") return null;
+  return {
+    timeframeMin: r.timeframeMin,
+    timeframeMax: r.timeframeMax,
+    timeframeUnit: typeof r.timeframeUnit === "string" ? r.timeframeUnit : "months",
+    confidenceLevel: (r.confidenceLevel as "low" | "medium" | "high") ?? "medium",
+  };
+}
+
 export default async function DashboardPage() {
   const supabase = await createClient();
   const {
@@ -33,12 +50,7 @@ export default async function DashboardPage() {
         .maybeSingle(),
     ]);
 
-  const estimate = profile?.estimate_result as {
-    timeframeMin: number;
-    timeframeMax: number;
-    timeframeUnit: string;
-    confidenceLevel: "low" | "medium" | "high";
-  } | null;
+  const estimate = parseEstimate(profile?.estimate_result);
 
   const sortedEntries = (entries ?? []) as Array<{
     id: string;
@@ -61,6 +73,14 @@ export default async function DashboardPage() {
   const hasPlan = !!latestPlan;
   const hasWizardData = !!profile?.wizard_state;
 
+  const weeksLogged = sortedEntries.length;
+  const totalEstimateWeeks = estimate
+    ? Math.round(((estimate.timeframeMin + estimate.timeframeMax) / 2) * 4.33)
+    : 0;
+  const milestonePct = totalEstimateWeeks > 0
+    ? Math.min(100, Math.round((weeksLogged / totalEstimateWeeks) * 100))
+    : 0;
+
   return (
     <div className="min-h-screen bg-background px-4 py-10">
       <div className="mx-auto max-w-lg space-y-6">
@@ -80,19 +100,72 @@ export default async function DashboardPage() {
         {/* Summary */}
         <SummaryCard estimate={estimate} latestEntry={latestEntry} />
 
-        {/* Weight chart */}
-        {chartData.length > 1 && (
+        {/* Weight chart — always show card, empty state when < 2 entries */}
+        <div
+          className="rounded-[var(--r-card)] border p-5 space-y-4"
+          style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+        >
+          <p
+            className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em]"
+            style={{ color: "var(--primary)" }}
+          >
+            Weight over time
+          </p>
+          {chartData.length >= 2 ? (
+            <ProgressChart data={chartData} />
+          ) : (
+            <p className="text-[0.875rem] py-6 text-center" style={{ color: "var(--muted-foreground)" }}>
+              {chartData.length === 0
+                ? "Log your first check-in to start tracking."
+                : "Log one more week to see your weight trend."}
+            </p>
+          )}
+        </div>
+
+        {/* Milestone progress card */}
+        {weeksLogged > 0 && estimate && (
           <div
-            className="rounded-[var(--r-card)] border p-5 space-y-4"
+            className="rounded-[var(--r-card)] border p-5 space-y-3"
             style={{ borderColor: "var(--border)", background: "var(--surface)" }}
           >
             <p
               className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em]"
               style={{ color: "var(--primary)" }}
             >
-              Weight over time
+              Progress milestone
             </p>
-            <ProgressChart data={chartData} />
+            <div className="flex items-center justify-between">
+              <p className="text-[0.875rem]" style={{ color: "var(--muted-foreground)" }}>
+                {weeksLogged} week{weeksLogged !== 1 ? "s" : ""} logged
+              </p>
+              <p className="text-[0.875rem] font-semibold" style={{ color: "var(--foreground)" }}>
+                {milestonePct}% of estimate
+              </p>
+            </div>
+            <div
+              className="h-2 rounded-full overflow-hidden"
+              style={{ background: "var(--border)" }}
+            >
+              <div
+                className="h-full rounded-full transition-all duration-500"
+                style={{ width: `${milestonePct}%`, background: "var(--primary)" }}
+              />
+            </div>
+            {weeksLogged >= 12 && (
+              <p className="text-[0.8125rem]" style={{ color: "var(--success)" }}>
+                Exceptional commitment — 12+ weeks in.
+              </p>
+            )}
+            {weeksLogged >= 8 && weeksLogged < 12 && (
+              <p className="text-[0.8125rem]" style={{ color: "var(--success)" }}>
+                8 weeks strong. You&apos;re building a real habit.
+              </p>
+            )}
+            {weeksLogged >= 4 && weeksLogged < 8 && (
+              <p className="text-[0.8125rem]" style={{ color: "var(--success)" }}>
+                4 weeks consistent. Keep the momentum.
+              </p>
+            )}
           </div>
         )}
 
