@@ -15,10 +15,9 @@ export default async function ProgressPage() {
     .eq("user_id", user!.id)
     .order("week_number", { ascending: true });
 
-  const nextWeek =
-    entries && entries.length > 0
-      ? Math.max(...entries.map((e) => e.week_number as number)) + 1
-      : 1;
+  const loggedWeeks = (entries ?? []).map((e) => e.week_number as number);
+  const maxWeek = loggedWeeks.length > 0 ? Math.max(...loggedWeeks) : 0;
+  const nextWeek = maxWeek + 1;
 
   return (
     <div className="min-h-screen bg-background px-4 py-10">
@@ -39,7 +38,7 @@ export default async function ProgressPage() {
           </p>
         </div>
 
-        <ProgressForm nextWeek={nextWeek} />
+        <ProgressForm nextWeek={nextWeek} loggedWeeks={loggedWeeks} />
 
         {entries && entries.length > 0 && (
           <EntryTimeline entries={entries} />

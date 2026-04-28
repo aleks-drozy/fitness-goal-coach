@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 interface ProgressFormProps {
   nextWeek: number;
+  loggedWeeks: number[];
 }
 
 interface SuccessData {
@@ -18,13 +19,19 @@ interface SuccessData {
   plan_updated: boolean;
 }
 
-export function ProgressForm({ nextWeek }: ProgressFormProps) {
+export function ProgressForm({ nextWeek, loggedWeeks }: ProgressFormProps) {
   const router = useRouter();
+  const [weekNumber, setWeekNumber] = useState(nextWeek);
   const [currentWeight, setCurrentWeight] = useState("");
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<SuccessData | null>(null);
+
+  // Weeks available to log: 1..nextWeek that haven't been logged yet
+  const availableWeeks = Array.from({ length: nextWeek }, (_, i) => i + 1).filter(
+    (w) => !loggedWeeks.includes(w)
+  );
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -35,7 +42,7 @@ export function ProgressForm({ nextWeek }: ProgressFormProps) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        weekNumber: nextWeek,
+        weekNumber,
         currentWeight: parseFloat(currentWeight),
         notes,
       }),
@@ -105,6 +112,7 @@ export function ProgressForm({ nextWeek }: ProgressFormProps) {
             setSuccess(null);
             setCurrentWeight("");
             setNotes("");
+            setWeekNumber(nextWeek + 1);
           }}
         >
           Log another week
@@ -119,37 +127,54 @@ export function ProgressForm({ nextWeek }: ProgressFormProps) {
       className="rounded-[var(--r-card)] border p-6 space-y-5"
       style={{ borderColor: "var(--border)", background: "var(--surface)" }}
     >
-      <div>
+      {/* Week picker — only shown when multiple unlogged weeks exist to backfill */}
+      {availableWeeks.length > 1 ? (
+        <div className="space-y-1.5">
+          <Label htmlFor="week">Week</Label>
+          <select
+            id="week"
+            value={weekNumber}
+            onChange={(e) => setWeekNumber(Number(e.target.value))}
+            className="w-full rounded-[var(--r-input)] border px-3 py-2 text-sm bg-transparent"
+            style={{ borderColor: "var(--border)", color: "var(--foreground)" }}
+          >
+            {availableWeeks.map((w) => (
+              <option key={w} value={w}>
+                Week {w}{w === nextWeek ? " (current)" : " (backfill)"}
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : (
         <p className="text-[0.8125rem] font-medium" style={{ color: "var(--muted-foreground)" }}>
-          Week {nextWeek}
+          Week {weekNumber}
         </p>
+      )}
+
+      <div className="space-y-1.5">
+        <Label htmlFor="weight">Current weight (kg)</Label>
+        <Input
+          id="weight"
+          type="number"
+          step="0.1"
+          min="20"
+          max="300"
+          placeholder="74.5"
+          value={currentWeight}
+          onChange={(e) => setCurrentWeight(e.target.value)}
+          required
+        />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-1.5">
-          <Label htmlFor="weight">Current weight (kg)</Label>
-          <Input
-            id="weight"
-            type="number"
-            step="0.1"
-            min="20"
-            max="300"
-            placeholder="74.5"
-            value={currentWeight}
-            onChange={(e) => setCurrentWeight(e.target.value)}
-            required
-          />
-        </div>
-        <div className="space-y-1.5 col-span-2">
-          <Label htmlFor="notes">How did the week go?</Label>
-          <Textarea
-            id="notes"
-            placeholder="Training consistency, diet adherence, energy levels, anything notable…"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            rows={3}
-          />
-        </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="notes">How did the week go?</Label>
+        <Textarea
+          id="notes"
+          placeholder="Training consistency, diet adherence, energy levels, anything notable…"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          rows={3}
+        />
       </div>
 
       {error && (
