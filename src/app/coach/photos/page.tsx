@@ -11,17 +11,12 @@ export default function PhotosPage() {
   const { state, setPhotos } = useWizard();
   const { photos } = state;
 
-  const isValid =
-    photos.consentGiven &&
-    photos.currentPhotoBase64 !== null &&
-    photos.goalPhotoBase64 !== null;
-
   return (
     <>
       <ProgressBar currentStep={2} totalSteps={5} />
       <StepHeader
-        title="Your photos"
-        subtitle="Upload a current photo and a goal physique photo. Read the notice below first."
+        title="Your photos (optional)"
+        subtitle="Upload photos for visual context — your estimate works without them too."
         step={2}
         totalSteps={5}
       />
@@ -47,10 +42,11 @@ export default function PhotosPage() {
           onChange={(b64) => setPhotos({ goalPhotoBase64: b64 })}
         />
       </div>
+      {/* Photos are optional — always allow proceeding */}
       <NavButtons
         backHref="/coach/onboarding"
         nextHref="/coach/questionnaire"
-        disabled={!isValid}
+        disabled={false}
       />
     </>
   );
