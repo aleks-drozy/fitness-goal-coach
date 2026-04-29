@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
 import { createClient } from "@/lib/supabase/server";
+import { buildExercisePool, GRAPPLING_SPORTS } from "@/lib/exercises";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -103,12 +104,16 @@ Return ONLY valid JSON (no markdown fences):
     return NextResponse.json({ error: insertError.message }, { status: 500 });
   }
 
-  // Check if current weight deviates >10% from the total planned programme change
+  // Check if current weight deviates >10% from the total planned programme change.
+  // Guard: skip entirely before week 4 — early fluctuations are noise (water weight,
+  // measurement timing) and would trigger unnecessary plan regenerations.
   let planUpdated = false;
 
-  if (weekNumber >= 2 && estimate && ws) {
+  if (weekNumber >= 4 && estimate && ws) {
     const startWeight = (ws as Record<string, unknown> & { onboarding?: { weightKg?: number } })?.onboarding?.weightKg;
     const goalType = (ws as Record<string, unknown> & { questionnaire?: { goalType?: string } })?.questionnaire?.goalType;
+    const sport = String((ws as Record<string, unknown> & { questionnaire?: { sport?: string } })?.questionnaire?.sport ?? "none");
+    const workoutSetting = String((ws as Record<string, unknown> & { questionnaire?: { workoutSetting?: string } })?.questionnaire?.workoutSetting ?? "gym");
     const timeframeMax = (estimate as Record<string, unknown> & { timeframeMax?: number })?.timeframeMax;
 
     if (startWeight && timeframeMax) {
@@ -120,19 +125,26 @@ Return ONLY valid JSON (no markdown fences):
       const deviation = Math.abs(currentWeight - expectedWeight) / totalProgrammeChange;
 
       if (deviation > 0.1) {
+        const isGrappling = GRAPPLING_SPORTS.has(sport);
+        const exercisePool = buildExercisePool(isGrappling, workoutSetting);
+
         const planPrompt = `You are an expert fitness coach. A user's progress is deviating from their plan. Update their training plan.
 
 User goal: ${goalType ?? "general fitness"}
+Sport: ${sport}
 Starting weight: ${startWeight}kg
 Expected weight at week ${weekNumber}: ${expectedWeight.toFixed(1)}kg
 Actual weight: ${currentWeight}kg
 Deviation: ${(deviation * 100).toFixed(0)}%
+${exercisePool}
+
+IMPORTANT: Use exercise names exactly as they appear in the library above. Do not invent exercise names not listed.
 
 Return ONLY valid JSON (no markdown fences) matching exactly:
 {
   "weekly_schedule": [{ "day": "string", "focus": "string", "exercises": ["string"] }],
   "nutrition": { "calories_guidance": "string", "protein_target": "string", "meal_timing": "string" },
-  "judo_specific": null,
+  "judo_specific": ${isGrappling ? `{ "technical_focus": "string", "conditioning_priority": "string" }` : "null"},
   "recovery": { "sleep": "string", "active_recovery": "string" }
 }`;
 
