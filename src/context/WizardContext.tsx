@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { WizardState, OnboardingData, PhotoData, QuestionnaireData, JudoData, Sport } from "@/lib/types";
+import { WizardState, OnboardingData, PhotoData, QuestionnaireData, JudoData, EstimateResult, Sport } from "@/lib/types";
 
 const STORAGE_KEY = "fitness-wizard-state";
 
@@ -32,6 +32,7 @@ const defaultState: WizardState = {
     hasCompetitionSoon: false,
     weeklySessionLog: "",
   },
+  estimateResult: null,
 };
 
 function loadFromStorage(): WizardState {
@@ -59,6 +60,7 @@ function saveToStorage(state: WizardState) {
   try {
     const toSave = {
       ...state,
+      // Never persist base64 blobs — too large and stale after a refresh
       photos: { consentGiven: state.photos.consentGiven, currentPhotoBase64: null, goalPhotoBase64: null },
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
@@ -73,6 +75,7 @@ interface WizardContextValue {
   setPhotos: (data: Partial<PhotoData>) => void;
   setQuestionnaire: (data: Partial<QuestionnaireData>) => void;
   setJudo: (data: Partial<JudoData>) => void;
+  setEstimateResult: (result: EstimateResult) => void;
   clearWizard: () => void;
 }
 
@@ -103,13 +106,16 @@ export function WizardProvider({ children }: { children: ReactNode }) {
   const setJudo = (data: Partial<JudoData>) =>
     setState((s) => ({ ...s, judo: { ...s.judo, ...data } }));
 
+  const setEstimateResult = (result: EstimateResult) =>
+    setState((s) => ({ ...s, estimateResult: result }));
+
   const clearWizard = () => {
     setState(defaultState);
     try { localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
   };
 
   return (
-    <WizardContext.Provider value={{ state, setOnboarding, setPhotos, setQuestionnaire, setJudo, clearWizard }}>
+    <WizardContext.Provider value={{ state, setOnboarding, setPhotos, setQuestionnaire, setJudo, setEstimateResult, clearWizard }}>
       {children}
     </WizardContext.Provider>
   );

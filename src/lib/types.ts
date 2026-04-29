@@ -41,6 +41,7 @@ export interface WizardState {
   photos: PhotoData;
   questionnaire: QuestionnaireData;
   judo: JudoData;
+  estimateResult: EstimateResult | null;
 }
 
 export interface EstimateResult {

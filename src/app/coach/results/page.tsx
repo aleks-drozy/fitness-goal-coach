@@ -19,17 +19,26 @@ import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 
 export default function ResultsPage() {
-  const { state } = useWizard();
+  const { state, setEstimateResult } = useWizard();
   const shouldReduceMotion = useReducedMotion();
-  const [result, setResult] = useState<EstimateResult | null>(null);
+  // Initialise from cached context — avoids re-fetching on every navigation to results
+  const [result, setResult] = useState<EstimateResult | null>(state.estimateResult);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(state.estimateResult === null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
 
   useEffect(() => {
+    // If we already have a cached result, skip the fetch and just resolve login state
+    if (state.estimateResult !== null) {
+      const supabase = createClient();
+      supabase.auth.getUser().then(({ data: { user } }) => setIsLoggedIn(!!user));
+      return;
+    }
+
     fetchEstimate(state)
       .then(async (r) => {
         setResult(r);
+        setEstimateResult(r); // persist to context + localStorage
         const supabase = createClient();
         const { data: { user } } = await supabase.auth.getUser();
         setIsLoggedIn(!!user);
