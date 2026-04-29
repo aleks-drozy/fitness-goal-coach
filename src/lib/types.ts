@@ -12,6 +12,7 @@ export interface OnboardingData {
   sex: Sex | null;
   heightCm: number | null;
   weightKg: number | null;
+  targetWeight: number | null;
   experience: ExperienceLevel | null;
   activityLevel: ActivityLevel | null;
 }

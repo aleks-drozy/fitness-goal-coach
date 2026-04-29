@@ -33,6 +33,11 @@ The user has uploaded a current body photo and a goal physique photo. Use the vi
 `
     : "";
 
+  const targetWeightLine =
+    onboarding.targetWeight !== null && onboarding.targetWeight !== undefined
+      ? `- Target weight: ${onboarding.targetWeight} kg (wants to change ${Math.abs((onboarding.weightKg ?? 0) - onboarding.targetWeight).toFixed(1)} kg)`
+      : "";
+
   return `You are an experienced, evidence-based fitness coach. You give realistic, honest estimates — never false promises.
 
 USER PROFILE:
@@ -40,8 +45,8 @@ USER PROFILE:
 - Age: ${onboarding.age}
 - Sex: ${onboarding.sex}
 - Height: ${onboarding.heightCm} cm
-- Weight: ${onboarding.weightKg} kg
-- Training experience: ${onboarding.experience}
+- Current weight: ${onboarding.weightKg} kg
+${targetWeightLine}- Training experience: ${onboarding.experience}
 - Activity level: ${onboarding.activityLevel}
 
 GOAL:

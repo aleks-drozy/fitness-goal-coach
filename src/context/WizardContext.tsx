@@ -12,6 +12,7 @@ const defaultState: WizardState = {
     sex: null,
     heightCm: null,
     weightKg: null,
+    targetWeight: null,
     experience: null,
     activityLevel: null,
   },
