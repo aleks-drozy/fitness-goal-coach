@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
   for (const email of remindEmails) {
     try {
       await resend.emails.send({
-        from: "Fitness Coach <noreply@yourdomain.com>",
+        from: process.env.EMAIL_FROM ?? "Fitness Coach <noreply@yourdomain.com>",
         to: email,
         subject: "Time to log your weekly check-in 💪",
         html: `
