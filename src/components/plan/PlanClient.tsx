@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PlanDisplay } from "@/components/plan/PlanDisplay";
 
@@ -43,13 +44,13 @@ export function PlanClient({ initialPlan, hasProfile }: PlanClientProps) {
         <p className="text-[0.875rem]" style={{ color: "var(--muted-foreground)" }}>
           Complete the fitness wizard first to generate a personalized plan.
         </p>
-        <a
+        <Link
           href="/coach"
           className="mt-4 inline-block text-[0.875rem] font-medium"
           style={{ color: "var(--primary)" }}
         >
           Start wizard →
-        </a>
+        </Link>
       </div>
     );
   }
