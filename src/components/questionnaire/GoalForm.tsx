@@ -27,7 +27,13 @@ export function GoalForm() {
           onValueChange={(v) => setQuestionnaire({ goalType: v as GoalType })}
         >
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select your goal" />
+            <SelectValue>
+            {(v: unknown) => ({
+              fat_loss: "Fat Loss",
+              muscle_gain: "Muscle Gain",
+              recomposition: "Body Recomposition",
+            }[v as string] ?? "Select your goal")}
+          </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="fat_loss">Fat loss</SelectItem>
@@ -73,7 +79,13 @@ export function GoalForm() {
           onValueChange={(v) => setQuestionnaire({ workoutSetting: v as WorkoutSetting })}
         >
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Where do you train?" />
+            <SelectValue>
+            {(v: unknown) => ({
+              gym: "Gym",
+              home: "Home (limited equipment)",
+              both: "Both (Gym & Home)",
+            }[v as string] ?? "Where do you train?")}
+          </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="gym">Gym</SelectItem>

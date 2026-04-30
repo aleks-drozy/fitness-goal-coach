@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { WizardState, OnboardingData, PhotoData, QuestionnaireData, JudoData, EstimateResult, Sport } from "@/lib/types";
+import { WizardState, OnboardingData, PhotoData, QuestionnaireData, JudoData, CompetitionContext, EstimateResult, Sport } from "@/lib/types";
 
 const STORAGE_KEY = "fitness-wizard-state";
 
@@ -32,6 +32,11 @@ const defaultState: WizardState = {
     intensity: null,
     hasCompetitionSoon: false,
     weeklySessionLog: "",
+  },
+  competitionContext: {
+    isActivelyCompeting: false,
+    weightClass: null,
+    competitionDate: null,
   },
   estimateResult: null,
 };
@@ -72,10 +77,12 @@ function saveToStorage(state: WizardState) {
 
 interface WizardContextValue {
   state: WizardState;
+  hydrated: boolean;
   setOnboarding: (data: Partial<OnboardingData>) => void;
   setPhotos: (data: Partial<PhotoData>) => void;
   setQuestionnaire: (data: Partial<QuestionnaireData>) => void;
   setJudo: (data: Partial<JudoData>) => void;
+  setCompetitionContext: (data: Partial<CompetitionContext>) => void;
   setEstimateResult: (result: EstimateResult) => void;
   clearWizard: () => void;
 }
@@ -107,6 +114,9 @@ export function WizardProvider({ children }: { children: ReactNode }) {
   const setJudo = (data: Partial<JudoData>) =>
     setState((s) => ({ ...s, judo: { ...s.judo, ...data } }));
 
+  const setCompetitionContext = (data: Partial<CompetitionContext>) =>
+    setState((s) => ({ ...s, competitionContext: { ...s.competitionContext, ...data } }));
+
   const setEstimateResult = (result: EstimateResult) =>
     setState((s) => ({ ...s, estimateResult: result }));
 
@@ -116,7 +126,7 @@ export function WizardProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <WizardContext.Provider value={{ state, setOnboarding, setPhotos, setQuestionnaire, setJudo, setEstimateResult, clearWizard }}>
+    <WizardContext.Provider value={{ state, hydrated, setOnboarding, setPhotos, setQuestionnaire, setJudo, setCompetitionContext, setEstimateResult, clearWizard }}>
       {children}
     </WizardContext.Provider>
   );

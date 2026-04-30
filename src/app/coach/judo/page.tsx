@@ -8,11 +8,16 @@ import { JudoForm } from "@/components/judo/JudoForm";
 
 export default function JudoPage() {
   const { state } = useWizard();
-  const { judo } = state;
+  const { judo, competitionContext } = state;
+
+  const competitionValid = competitionContext.isActivelyCompeting
+    ? competitionContext.weightClass !== null && !!competitionContext.competitionDate
+    : true;
 
   const isValid =
     judo.sessionsPerWeek !== null &&
-    judo.intensity !== null;
+    judo.intensity !== null &&
+    competitionValid;
 
   return (
     <>

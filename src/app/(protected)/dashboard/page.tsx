@@ -5,6 +5,7 @@ import { ProgressChart } from "@/components/dashboard/ProgressChart";
 import { FeedbackCallout } from "@/components/dashboard/FeedbackCallout";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import type { CompetitionContext, OnboardingData } from "@/lib/types";
 
 function parseEstimate(raw: unknown): {
   timeframeMin: number;
@@ -23,11 +24,27 @@ function parseEstimate(raw: unknown): {
   };
 }
 
+function parseCompetitionContext(ws: unknown): CompetitionContext | null {
+  if (!ws || typeof ws !== "object") return null;
+  const r = ws as Record<string, unknown>;
+  const cc = r.competitionContext as Partial<CompetitionContext> | undefined;
+  if (!cc) return null;
+  return {
+    isActivelyCompeting: Boolean(cc.isActivelyCompeting),
+    weightClass: cc.weightClass ?? null,
+    competitionDate: cc.competitionDate ?? null,
+  };
+}
+
+function parseOnboarding(ws: unknown): Partial<OnboardingData> | null {
+  if (!ws || typeof ws !== "object") return null;
+  const r = ws as Record<string, unknown>;
+  return (r.onboarding as Partial<OnboardingData>) ?? null;
+}
+
 export default async function DashboardPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
   const [{ data: profile }, { data: entries }, { data: latestPlan }] =
     await Promise.all([
@@ -51,6 +68,8 @@ export default async function DashboardPage() {
     ]);
 
   const estimate = parseEstimate(profile?.estimate_result);
+  const competitionCtx = parseCompetitionContext(profile?.wizard_state);
+  const onboardingData = parseOnboarding(profile?.wizard_state);
 
   const sortedEntries = (entries ?? []) as Array<{
     id: string;
@@ -62,13 +81,8 @@ export default async function DashboardPage() {
     created_at: string;
   }>;
 
-  const latestEntry =
-    sortedEntries.length > 0 ? sortedEntries[sortedEntries.length - 1] : null;
-
-  const chartData = sortedEntries.map((e) => ({
-    week: e.week_number,
-    weight: e.current_weight,
-  }));
+  const latestEntry = sortedEntries.length > 0 ? sortedEntries[sortedEntries.length - 1] : null;
+  const chartData = sortedEntries.map((e) => ({ week: e.week_number, weight: e.current_weight }));
 
   const hasPlan = !!latestPlan;
   const hasWizardData = !!profile?.wizard_state;
@@ -80,6 +94,23 @@ export default async function DashboardPage() {
   const milestonePct = totalEstimateWeeks > 0
     ? Math.min(100, Math.round((weeksLogged / totalEstimateWeeks) * 100))
     : 0;
+
+  // Competition countdown calculations
+  const compDate = competitionCtx?.competitionDate;
+  const compWeightClass = competitionCtx?.weightClass;
+  const currentWeight = onboardingData?.weightKg ?? latestEntry?.current_weight ?? null;
+
+  const daysToComp = compDate
+    ? Math.round((new Date(compDate).getTime() - Date.now()) / 86_400_000)
+    : null;
+
+  const kgToComp =
+    currentWeight && compWeightClass && typeof compWeightClass === "number"
+      ? Math.max(0, currentWeight - compWeightClass)
+      : null;
+
+  const hasCompetition = daysToComp !== null && daysToComp > 0;
+  const isFinalPrep = hasCompetition && daysToComp !== null && daysToComp <= 28;
 
   return (
     <div className="min-h-screen bg-background px-4 py-10">
@@ -100,7 +131,110 @@ export default async function DashboardPage() {
         {/* Summary */}
         <SummaryCard estimate={estimate} latestEntry={latestEntry} />
 
-        {/* Weight chart — always show card, empty state when < 2 entries */}
+        {/* Competition countdown — replaces milestone when date is set */}
+        {hasCompetition ? (
+          <div className="space-y-3">
+            {/* Amber warning for final prep phase */}
+            {isFinalPrep && (
+              <div
+                className="rounded-[var(--r-card)] border p-4"
+                style={{ borderColor: "var(--warn, oklch(0.75 0.15 80))", background: "oklch(0.75 0.15 80 / 8%)" }}
+              >
+                <p className="text-[0.8125rem] font-semibold" style={{ color: "var(--warn, oklch(0.6 0.15 80))" }}>
+                  Final prep phase
+                </p>
+                <p className="text-[0.8125rem]" style={{ color: "var(--warn, oklch(0.6 0.15 80))" }}>
+                  Prioritise recovery and weight management in these final weeks.
+                </p>
+              </div>
+            )}
+
+            <div
+              className="rounded-[var(--r-card)] border p-5 space-y-4"
+              style={{ borderColor: "var(--primary)", background: "var(--accent-dim)" }}
+            >
+              <p
+                className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em]"
+                style={{ color: "var(--primary)" }}
+              >
+                {daysToComp} days to competition
+                {compWeightClass ? ` · ${kgToComp !== null ? kgToComp.toFixed(1) : "?"}kg to ${compWeightClass}kg` : ""}
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <div
+                  className="rounded-[var(--r-card)] border p-3 text-center"
+                  style={{ borderColor: "var(--border)", background: "var(--background)" }}
+                >
+                  <p className="text-2xl font-bold" style={{ color: "var(--primary)" }}>
+                    {daysToComp}
+                  </p>
+                  <p className="text-[0.75rem] mt-0.5" style={{ color: "var(--muted-foreground)" }}>
+                    days remaining
+                  </p>
+                </div>
+                {kgToComp !== null && (
+                  <div
+                    className="rounded-[var(--r-card)] border p-3 text-center"
+                    style={{ borderColor: "var(--border)", background: "var(--background)" }}
+                  >
+                    <p className="text-2xl font-bold" style={{ color: "var(--primary)" }}>
+                      {kgToComp.toFixed(1)}
+                    </p>
+                    <p className="text-[0.75rem] mt-0.5" style={{ color: "var(--muted-foreground)" }}>
+                      kg to cut
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Standard milestone progress when no competition date */
+          weeksLogged > 0 && estimate && (
+            <div
+              className="rounded-[var(--r-card)] border p-5 space-y-3"
+              style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+            >
+              <p
+                className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em]"
+                style={{ color: "var(--primary)" }}
+              >
+                Progress milestone
+              </p>
+              <div className="flex items-center justify-between">
+                <p className="text-[0.875rem]" style={{ color: "var(--muted-foreground)" }}>
+                  {weeksLogged} week{weeksLogged !== 1 ? "s" : ""} logged
+                </p>
+                <p className="text-[0.875rem] font-semibold" style={{ color: "var(--foreground)" }}>
+                  {milestonePct}% of estimate
+                </p>
+              </div>
+              <div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--border)" }}>
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${milestonePct}%`, background: "var(--primary)" }}
+                />
+              </div>
+              {weeksLogged >= 12 && (
+                <p className="text-[0.8125rem]" style={{ color: "var(--success)" }}>
+                  Exceptional commitment — 12+ weeks in.
+                </p>
+              )}
+              {weeksLogged >= 8 && weeksLogged < 12 && (
+                <p className="text-[0.8125rem]" style={{ color: "var(--success)" }}>
+                  8 weeks strong. You&apos;re building a real habit.
+                </p>
+              )}
+              {weeksLogged >= 4 && weeksLogged < 8 && (
+                <p className="text-[0.8125rem]" style={{ color: "var(--success)" }}>
+                  4 weeks consistent. Keep the momentum.
+                </p>
+              )}
+            </div>
+          )
+        )}
+
+        {/* Weight chart */}
         <div
           className="rounded-[var(--r-card)] border p-5 space-y-4"
           style={{ borderColor: "var(--border)", background: "var(--surface)" }}
@@ -121,53 +255,6 @@ export default async function DashboardPage() {
             </p>
           )}
         </div>
-
-        {/* Milestone progress card */}
-        {weeksLogged > 0 && estimate && (
-          <div
-            className="rounded-[var(--r-card)] border p-5 space-y-3"
-            style={{ borderColor: "var(--border)", background: "var(--surface)" }}
-          >
-            <p
-              className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em]"
-              style={{ color: "var(--primary)" }}
-            >
-              Progress milestone
-            </p>
-            <div className="flex items-center justify-between">
-              <p className="text-[0.875rem]" style={{ color: "var(--muted-foreground)" }}>
-                {weeksLogged} week{weeksLogged !== 1 ? "s" : ""} logged
-              </p>
-              <p className="text-[0.875rem] font-semibold" style={{ color: "var(--foreground)" }}>
-                {milestonePct}% of estimate
-              </p>
-            </div>
-            <div
-              className="h-2 rounded-full overflow-hidden"
-              style={{ background: "var(--border)" }}
-            >
-              <div
-                className="h-full rounded-full transition-all duration-500"
-                style={{ width: `${milestonePct}%`, background: "var(--primary)" }}
-              />
-            </div>
-            {weeksLogged >= 12 && (
-              <p className="text-[0.8125rem]" style={{ color: "var(--success)" }}>
-                Exceptional commitment — 12+ weeks in.
-              </p>
-            )}
-            {weeksLogged >= 8 && weeksLogged < 12 && (
-              <p className="text-[0.8125rem]" style={{ color: "var(--success)" }}>
-                8 weeks strong. You&apos;re building a real habit.
-              </p>
-            )}
-            {weeksLogged >= 4 && weeksLogged < 8 && (
-              <p className="text-[0.8125rem]" style={{ color: "var(--success)" }}>
-                4 weeks consistent. Keep the momentum.
-              </p>
-            )}
-          </div>
-        )}
 
         {/* Latest feedback */}
         {latestEntry?.ai_feedback && (
@@ -190,28 +277,19 @@ export default async function DashboardPage() {
             Quick actions
           </p>
           <div className="grid grid-cols-1 gap-2">
-            <Link
-              href="/progress"
-              className={cn(buttonVariants({ size: "lg" }), "w-full")}
-            >
+            <Link href="/progress" className={cn(buttonVariants({ size: "lg" }), "w-full")}>
               Log this week →
             </Link>
             <Link
               href="/plan"
-              className={cn(
-                buttonVariants({ variant: "outline", size: "default" }),
-                "w-full"
-              )}
+              className={cn(buttonVariants({ variant: "outline", size: "default" }), "w-full")}
             >
               {hasPlan ? "View training plan" : "Generate training plan"}
             </Link>
             {!hasWizardData && (
               <Link
                 href="/coach"
-                className={cn(
-                  buttonVariants({ variant: "ghost", size: "default" }),
-                  "w-full"
-                )}
+                className={cn(buttonVariants({ variant: "ghost", size: "default" }), "w-full")}
               >
                 Re-run fitness wizard
               </Link>
@@ -226,17 +304,10 @@ export default async function DashboardPage() {
             style={{ borderColor: "var(--border)", background: "var(--surface)" }}
           >
             <p className="text-[0.875rem] font-medium">Complete your profile</p>
-            <p
-              className="mt-1 text-[0.8125rem]"
-              style={{ color: "var(--muted-foreground)" }}
-            >
-              Run the fitness wizard to get your personalized estimate and unlock
-              plan generation.
+            <p className="mt-1 text-[0.8125rem]" style={{ color: "var(--muted-foreground)" }}>
+              Run the fitness wizard to get your personalized estimate and unlock plan generation.
             </p>
-            <Link
-              href="/coach"
-              className={cn(buttonVariants({ size: "sm" }), "mt-4")}
-            >
+            <Link href="/coach" className={cn(buttonVariants({ size: "sm" }), "mt-4")}>
               Start wizard
             </Link>
           </div>

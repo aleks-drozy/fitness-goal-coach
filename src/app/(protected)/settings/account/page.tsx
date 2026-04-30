@@ -24,6 +24,12 @@ export default function AccountSettingsPage() {
     window.location.href = "/api/account/export";
   }
 
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/");
+  }
+
   async function handleDelete() {
     if (confirmInput !== email) return;
     setDeleting(true);
@@ -50,6 +56,17 @@ export default function AccountSettingsPage() {
         <div>
           <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--primary)" }}>Settings</p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight">Account</h1>
+        </div>
+
+        {/* Sign out */}
+        <div className="space-y-4 rounded-[var(--r-card)] border p-6" style={{ borderColor: "var(--border)", background: "var(--surface)" }}>
+          <div>
+            <h2 className="text-base font-semibold">Sign out</h2>
+            <p className="mt-1 text-[0.875rem]" style={{ color: "var(--muted-foreground)" }}>
+              Sign out of your account on this device.
+            </p>
+          </div>
+          <Button variant="outline" onClick={handleSignOut}>Sign out</Button>
         </div>
 
         {/* Export */}

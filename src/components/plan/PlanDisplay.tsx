@@ -19,6 +19,8 @@ interface FitnessPlan {
     sleep?: string;
     active_recovery?: string;
   } | null;
+  periodization_notes?: string | null;
+  sport?: string | null;
 }
 
 interface PlanDisplayProps {
@@ -36,9 +38,38 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
+function sportDisplayName(sport?: string | null): string {
+  if (!sport || sport === "none") return "Sport";
+  const map: Record<string, string> = {
+    judo: "Judo",
+    bjj: "BJJ",
+    wrestling: "Wrestling",
+    mma: "MMA",
+    boxing: "Boxing",
+    running: "Running",
+    cycling: "Cycling",
+    football: "Football",
+    other: "Sport",
+  };
+  return map[sport] ?? sport.charAt(0).toUpperCase() + sport.slice(1);
+}
+
 export function PlanDisplay({ plan }: PlanDisplayProps) {
   return (
     <div className="space-y-6">
+      {/* Periodization overview — shown above schedule when present */}
+      {plan.periodization_notes && (
+        <div className="space-y-2">
+          <SectionLabel>Programme overview</SectionLabel>
+          <div
+            className="rounded-[var(--r-card)] border p-4"
+            style={{ borderColor: "var(--primary)", background: "var(--accent-dim)" }}
+          >
+            <p className="text-[0.875rem] leading-relaxed">{plan.periodization_notes}</p>
+          </div>
+        </div>
+      )}
+
       {/* Weekly schedule */}
       <div className="space-y-3">
         <SectionLabel>Weekly schedule</SectionLabel>
@@ -95,10 +126,10 @@ export function PlanDisplay({ plan }: PlanDisplayProps) {
         </div>
       </div>
 
-      {/* Judo-specific (conditional) */}
+      {/* Sport-specific (conditional) — label reads actual sport name */}
       {plan.judo_specific && (
         <div className="space-y-3">
-          <SectionLabel>Judo training</SectionLabel>
+          <SectionLabel>{sportDisplayName(plan.sport)} training</SectionLabel>
           <div
             className="rounded-[var(--r-card)] border divide-y"
             style={{ borderColor: "var(--border)", background: "var(--surface)" }}

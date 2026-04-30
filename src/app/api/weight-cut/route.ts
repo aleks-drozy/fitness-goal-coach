@@ -53,12 +53,18 @@ Return ONLY valid JSON (no markdown fences):
   "safetyWarnings": ["string"]
 }`;
 
-  const completion = await groq.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
-    messages: [{ role: "user", content: prompt }],
-    temperature: 0.3,
-    max_tokens: 2048,
-  });
+  let completion;
+  try {
+    completion = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.3,
+      max_tokens: 2048,
+    });
+  } catch (err) {
+    console.error("[/api/weight-cut] Groq error:", err);
+    return NextResponse.json({ error: "AI service temporarily unavailable. Please try again." }, { status: 500 });
+  }
 
   const raw = (completion.choices[0].message.content ?? "")
     .trim().replace(/^```json\n?/, "").replace(/\n?```$/, "");

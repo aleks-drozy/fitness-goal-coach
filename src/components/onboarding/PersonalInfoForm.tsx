@@ -47,7 +47,9 @@ export function PersonalInfoForm() {
             onValueChange={(v) => setOnboarding({ sex: v as Sex })}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select" />
+              <SelectValue>
+                {(v: unknown) => ({ male: "Male", female: "Female", other: "Prefer not to say" }[v as string] ?? "Select")}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="male">Male</SelectItem>
@@ -83,7 +85,9 @@ export function PersonalInfoForm() {
             onValueChange={(v) => setOnboarding({ experience: v as ExperienceLevel })}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select" />
+              <SelectValue>
+                {(v: unknown) => ({ beginner: "Beginner (0–1 yr)", intermediate: "Intermediate (1–3 yrs)", advanced: "Advanced (3+ yrs)" }[v as string] ?? "Select")}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="beginner">Beginner (0–1 yr)</SelectItem>
@@ -99,7 +103,15 @@ export function PersonalInfoForm() {
             onValueChange={(v) => setOnboarding({ activityLevel: v as ActivityLevel })}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select" />
+              <SelectValue>
+                {(v: unknown) => ({
+                  sedentary: "Sedentary (desk job, little exercise)",
+                  light: "Light (1–2 sessions/week)",
+                  moderate: "Moderate (3–4 sessions/week)",
+                  active: "Active (5–6 sessions/week)",
+                  very_active: "Very active (daily + sport)",
+                }[v as string] ?? "Select")}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="sedentary">Sedentary (desk job, little exercise)</SelectItem>

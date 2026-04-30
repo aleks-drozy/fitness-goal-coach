@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
 import { buildEstimatePrompt } from "@/lib/prompts";
 import { WizardState, EstimateResult } from "@/lib/types";
+import { rateLimit } from "@/lib/rate-limit";
 
 const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -12,6 +13,15 @@ const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
 export const maxDuration = 30;
 
 export async function POST(req: NextRequest) {
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
+    req.headers.get("x-real-ip") ??
+    "unknown";
+  const { allowed } = rateLimit(`estimate:${ip}`, 5, 60 * 60 * 1000);
+  if (!allowed) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   const contentLength = req.headers.get("content-length");
   if (contentLength && parseInt(contentLength, 10) > 200_000) {
     return NextResponse.json({ error: "Request too large" }, { status: 413 });
@@ -21,8 +31,8 @@ export async function POST(req: NextRequest) {
   const { state } = body;
 
   const currentPhoto = state.photos.currentPhotoBase64;
-  const goalPhoto = state.photos.goalPhotoBase64;
-  const hasPhotos = !!(currentPhoto && goalPhoto);
+  // Goal photo upload removed from wizard — hasPhotos now only requires current photo
+  const hasPhotos = !!currentPhoto;
 
   const promptText = buildEstimatePrompt(state, hasPhotos);
 
@@ -36,16 +46,21 @@ export async function POST(req: NextRequest) {
     ? [
         { type: "text", text: promptText },
         { type: "image_url", image_url: { url: `data:image/jpeg;base64,${currentPhoto}` } },
-        { type: "image_url", image_url: { url: `data:image/jpeg;base64,${goalPhoto}` } },
       ]
     : promptText;
 
-  const completion = await client.chat.completions.create({
-    model,
-    messages: [{ role: "user", content: messageContent }],
-    temperature: 0.3,
-    max_tokens: 1024,
-  });
+  let completion;
+  try {
+    completion = await client.chat.completions.create({
+      model,
+      messages: [{ role: "user", content: messageContent }],
+      temperature: 0.3,
+      max_tokens: 1024,
+    });
+  } catch (err) {
+    console.error("[/api/estimate] Groq error:", err);
+    return NextResponse.json({ error: "AI service error" }, { status: 502 });
+  }
 
   const rawText = (completion.choices[0].message.content ?? "")
     .trim()
@@ -56,6 +71,7 @@ export async function POST(req: NextRequest) {
   try {
     result = JSON.parse(rawText);
   } catch {
+    console.error("[/api/estimate] JSON parse failed. Raw:", rawText);
     return NextResponse.json(
       { error: "Failed to parse estimate from AI response" },
       { status: 500 }

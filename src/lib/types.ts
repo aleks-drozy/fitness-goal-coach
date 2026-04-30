@@ -37,12 +37,28 @@ export interface JudoData {
   weeklySessionLog: string;
 }
 
+export interface CompetitionContext {
+  isActivelyCompeting: boolean;
+  weightClass: number | string | null;
+  competitionDate: string | null;
+}
+
 export interface WizardState {
   onboarding: OnboardingData;
   photos: PhotoData;
   questionnaire: QuestionnaireData;
   judo: JudoData;
+  competitionContext: CompetitionContext;
   estimateResult: EstimateResult | null;
+}
+
+// Typed shape of wizard_state as stored in Supabase profiles.wizard_state
+export interface WizardStateDB {
+  onboarding?: Partial<OnboardingData>;
+  questionnaire?: Partial<QuestionnaireData>;
+  judo?: Partial<JudoData>;
+  competitionContext?: Partial<CompetitionContext>;
+  estimateResult?: EstimateResult | null;
 }
 
 export interface EstimateResult {

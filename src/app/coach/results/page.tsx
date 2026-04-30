@@ -13,23 +13,95 @@ import { ReasoningBlock } from "@/components/results/ReasoningBlock";
 import { TrainingGuidance } from "@/components/results/TrainingGuidance";
 import { NutritionNote } from "@/components/results/NutritionNote";
 import { Disclaimer } from "@/components/results/Disclaimer";
-import { ShareCard } from "@/components/results/ShareCard";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 
+function CompetitionHero({
+  weightClass,
+  competitionDate,
+  currentWeight,
+}: {
+  weightClass: number | string | null;
+  competitionDate: string | null;
+  currentWeight: number | null;
+}) {
+  const daysLeft = competitionDate
+    ? Math.round((new Date(competitionDate).getTime() - Date.now()) / 86_400_000)
+    : null;
+
+  const kgToDrop =
+    currentWeight && weightClass && typeof weightClass === "number"
+      ? Math.max(0, currentWeight - weightClass)
+      : null;
+
+  const weeksLeft = daysLeft !== null ? Math.round(daysLeft / 7) : null;
+  const isWithin12Weeks = weeksLeft !== null && weeksLeft <= 12;
+
+  const weightCutParams = new URLSearchParams();
+  if (currentWeight) weightCutParams.set("cw", String(currentWeight));
+  if (weightClass) weightCutParams.set("tc", String(weightClass));
+  if (competitionDate) weightCutParams.set("date", competitionDate);
+
+  return (
+    <div
+      className="rounded-[var(--r-card)] border p-5 space-y-3"
+      style={{ borderColor: "var(--primary)", background: "var(--accent-dim)" }}
+    >
+      <p
+        className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em]"
+        style={{ color: "var(--primary)" }}
+      >
+        Competition prep
+      </p>
+      <h2 className="text-xl font-semibold tracking-tight">
+        Here&apos;s your path to{" "}
+        <span style={{ color: "var(--primary)" }}>
+          {weightClass}kg
+        </span>
+      </h2>
+      {daysLeft !== null && kgToDrop !== null && (
+        <p className="text-[0.875rem]" style={{ color: "var(--muted-foreground)" }}>
+          {daysLeft} days until competition.{" "}
+          {kgToDrop > 0
+            ? `You need to drop ${kgToDrop.toFixed(1)}kg.`
+            : "You&apos;re already at weight."}
+        </p>
+      )}
+      {daysLeft !== null && kgToDrop === null && (
+        <p className="text-[0.875rem]" style={{ color: "var(--muted-foreground)" }}>
+          {daysLeft} days until competition.
+        </p>
+      )}
+      {isWithin12Weeks && (
+        <Link
+          href={`/weight-cut?${weightCutParams.toString()}`}
+          className={cn(buttonVariants({ size: "sm" }), "mt-2 inline-flex")}
+        >
+          Build Your Weight Cut Plan →
+        </Link>
+      )}
+    </div>
+  );
+}
+
 export default function ResultsPage() {
-  const { state, setEstimateResult } = useWizard();
+  const { state, hydrated, setEstimateResult } = useWizard();
   const shouldReduceMotion = useReducedMotion();
-  // Initialise from cached context — avoids re-fetching on every navigation to results
-  const [result, setResult] = useState<EstimateResult | null>(state.estimateResult);
+  const [result, setResult] = useState<EstimateResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(state.estimateResult === null);
+  const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
 
+  const { competitionContext, onboarding } = state;
+  const isCompeting = competitionContext.isActivelyCompeting;
+
   useEffect(() => {
-    // If we already have a cached result, skip the fetch and just resolve login state
+    if (!hydrated) return;
+
     if (state.estimateResult !== null) {
+      setResult(state.estimateResult);
+      setLoading(false);
       const supabase = createClient();
       supabase.auth.getUser().then(({ data: { user } }) => setIsLoggedIn(!!user));
       return;
@@ -38,12 +110,11 @@ export default function ResultsPage() {
     fetchEstimate(state)
       .then(async (r) => {
         setResult(r);
-        setEstimateResult(r); // persist to context + localStorage
+        setEstimateResult(r);
         const supabase = createClient();
         const { data: { user } } = await supabase.auth.getUser();
         setIsLoggedIn(!!user);
         if (user) {
-          // Best-effort save — failure doesn't affect displayed results
           supabase.from("profiles").upsert({
             id: user.id,
             wizard_state: {
@@ -58,7 +129,7 @@ export default function ResultsPage() {
       })
       .catch(() => setError("Something went wrong generating your estimate. Please try again."))
       .finally(() => setLoading(false));
-  }, []);
+  }, [hydrated]);
 
   const stagger = {
     hidden: {},
@@ -92,10 +163,7 @@ export default function ResultsPage() {
         >
           <div
             className="size-7 rounded-full border-2 animate-spin"
-            style={{
-              borderColor: "var(--border)",
-              borderTopColor: "var(--primary)",
-            }}
+            style={{ borderColor: "var(--border)", borderTopColor: "var(--primary)" }}
           />
           <p className="text-sm">Generating your estimate…</p>
         </motion.div>
@@ -118,26 +186,34 @@ export default function ResultsPage() {
       )}
 
       {!loading && result && (
-        <motion.div
-          key="results"
-          variants={stagger}
-          initial="hidden"
-          animate="show"
-        >
+        <motion.div key="results" variants={stagger} initial="hidden" animate="show">
           <motion.div variants={fadeUp}>
             <ProgressBar currentStep={5} totalSteps={5} />
           </motion.div>
 
-          <motion.div variants={fadeUp} className="mt-8">
-            <StepHeader
-              title={`${state.onboarding.name ? state.onboarding.name + "'s" : "Your"} estimate`}
-              subtitle="Based on what you've told us. This is a realistic range, not a guarantee."
-              step={5}
-              totalSteps={5}
-            />
-          </motion.div>
+          {!isCompeting && (
+            <motion.div variants={fadeUp} className="mt-8">
+              <StepHeader
+                title={`${onboarding.name ? onboarding.name + "'s" : "Your"} estimate`}
+                subtitle="Based on what you've told us. This is a realistic range, not a guarantee."
+                step={5}
+                totalSteps={5}
+              />
+            </motion.div>
+          )}
 
           <div className="space-y-4 mt-6">
+            {/* Competition hero — shown first when actively competing */}
+            {isCompeting && (
+              <motion.div variants={fadeUp}>
+                <CompetitionHero
+                  weightClass={competitionContext.weightClass}
+                  competitionDate={competitionContext.competitionDate}
+                  currentWeight={onboarding.weightKg}
+                />
+              </motion.div>
+            )}
+
             <motion.div variants={fadeUp}>
               <EstimateCard result={result} />
             </motion.div>
@@ -153,17 +229,13 @@ export default function ResultsPage() {
             <motion.div variants={fadeUp}>
               <Disclaimer />
             </motion.div>
-            {result && (
-              <motion.div variants={fadeUp} className="flex justify-center">
-                <ShareCard result={result} state={state} />
-              </motion.div>
-            )}
+
             <motion.div variants={fadeUp} className="pt-2">
               <Link
                 href="/coach/upsell"
                 className={cn(buttonVariants({ size: "lg" }), "w-full")}
               >
-                See what's included in Premium →
+                See what&apos;s included in Premium →
               </Link>
             </motion.div>
 

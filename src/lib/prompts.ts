@@ -2,34 +2,80 @@ import { WizardState } from "./types";
 
 const GRAPPLING_SPORTS = new Set(["judo", "bjj", "wrestling", "mma"]);
 
-export function buildEstimatePrompt(state: WizardState, hasPhotos: boolean): string {
-  const { onboarding, questionnaire, judo } = state;
-  const sport = questionnaire.sport;
+function sportSpecificNotes(sport: string): string {
+  switch (sport) {
+    case "bjj":
+      return "BJJ note: account for gi vs nogi weight difference (~1–2kg gi weight). Competition weigh-ins are typically same-day.";
+    case "wrestling":
+      return "Wrestling note: weigh-ins are same-day. Aggressive water cuts are common but risky — flag if cut exceeds 3% bodyweight in final 24h.";
+    case "mma":
+      return "MMA note: weigh-ins are typically 24h before competition, allowing rehydration. Cuts over 8–10% are high risk and increasingly restricted by commissions.";
+    case "judo":
+    default:
+      return "Judo note: randori, uchikomi, and grip fighting create high CNS load. Caloric deficit should be modest (250–400 kcal/day) during heavy training weeks to preserve technical performance.";
+  }
+}
 
+export function buildEstimatePrompt(state: WizardState, hasPhotos: boolean): string {
+  const { onboarding, questionnaire, judo, competitionContext } = state;
+  const sport = questionnaire.sport;
   const isGrappling = GRAPPLING_SPORTS.has(sport);
 
-  const sportSection = isGrappling
+  const daysToComp = competitionContext?.competitionDate
+    ? Math.round((new Date(competitionContext.competitionDate).getTime() - Date.now()) / 86_400_000)
+    : null;
+
+  const weeksToComp = daysToComp !== null ? Math.round(daysToComp / 7) : null;
+
+  const pctCutNeeded =
+    competitionContext?.weightClass &&
+    typeof competitionContext.weightClass === "number" &&
+    onboarding.weightKg
+      ? (onboarding.weightKg - competitionContext.weightClass) / onboarding.weightKg
+      : null;
+
+  const combatSportSection = isGrappling
     ? `
-GRAPPLING SPORT TRAINING:
+COMBAT SPORT CONTEXT:
 - Sport: ${sport}
-- Sessions per week: ${judo.sessionsPerWeek}
-- Intensity: ${judo.intensity}
-- Competition soon (within 8 weeks): ${judo.hasCompetitionSoon ? "yes" : "no"}
+- Weight class target: ${competitionContext?.weightClass ?? "not specified"}
+- Days to competition: ${daysToComp ?? "no competition date set"}
+- Sessions per week: ${judo.sessionsPerWeek ?? "unknown"}
+- Session intensity: ${judo.intensity ?? "unknown"}
+- Competition within 8 weeks: ${judo.hasCompetitionSoon ? "yes" : "no"}
 - Weekly session log: ${judo.weeklySessionLog || "not provided"}
-Factor grappling fatigue (grip exhaustion, uchikomi, randori) into training load calculations.
+
+When generating the estimate:
+${
+  daysToComp !== null && daysToComp > 0
+    ? `- Competition date is set: ${daysToComp} days (${weeksToComp} weeks) away. Anchor the timeline to this date — do not give a generic month range. State whether the cut is safe and achievable given the time available.`
+    : "- No competition date set. Give a realistic monthly estimate."
+}
+- Account for cumulative fatigue from grappling: randori, uchikomi, and live rolling create high CNS load. Caloric deficit should be modest (250–400 kcal/day) during heavy training weeks to preserve performance.
+${
+  pctCutNeeded !== null && pctCutNeeded > 0.05 && daysToComp !== null && daysToComp < 56
+    ? `- HIGH RISK: The user needs to lose ${(pctCutNeeded * 100).toFixed(1)}% of bodyweight in ${weeksToComp} weeks. Flag this explicitly in the reasoning with a specific warning. Do not recommend aggressive deficits during competition prep.`
+    : "- Do not recommend aggressive deficits during competition prep."
+}
+- ${sportSpecificNotes(sport)}
+${
+  daysToComp !== null && daysToComp > 0 && competitionContext?.weightClass
+    ? `- Output the estimate as: "You can safely reach ${competitionContext.weightClass}kg by [date] following this protocol" — not as a generic month range.`
+    : ""
+}
 `
     : sport !== "none"
     ? `
 SPORT TRAINING:
 - Sport: ${sport}
-Factor sport-specific fatigue and recovery into training load calculations.
+- Factor sport-specific fatigue and recovery into training load calculations.
 `
     : "";
 
   const photoSection = hasPhotos
     ? `
 PHOTO CONTEXT:
-The user has uploaded a current body photo and a goal physique photo. Use the visual information to inform your physique assessment. Acknowledge that the goal photo may show different genetics, lighting, or editing. Do not over-promise based on photos.
+The user has uploaded a current body photo. Use the visual information to inform your physique assessment. Do not over-promise based on photos — lighting, posture, and camera angle all affect appearance.
 `
     : "";
 
@@ -54,7 +100,7 @@ GOAL:
 - Workout setting: ${questionnaire.workoutSetting}
 - Injuries/limitations: ${questionnaire.injuries || "none reported"}
 - Sport: ${questionnaire.sport}
-${sportSection}${photoSection}
+${combatSportSection}${photoSection}
 TASK:
 Return a JSON object with this exact structure. Do not include any text outside the JSON.
 
@@ -75,6 +121,7 @@ Rules:
 - reasoning must reference this user's specific numbers and circumstances, not generic advice
 - If injuries are reported, note the recommendation to see a physiotherapist
 - If a grappling sport is selected, explicitly factor grappling fatigue into training guidance
+- If competition date is set, anchor the estimate to that date
 - Wording must be cautious, supportive, and non-medical
 - Never claim the app can perfectly predict body transformation`;
 }

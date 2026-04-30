@@ -1,10 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Zap, Menu, X } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Zap, Menu, X, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { createClient } from "@/lib/supabase/client";
 
 const tools = [
   { label: "Calculator", href: "/tools/calculator" },
@@ -22,7 +23,21 @@ const allLinks = [...tools, ...protected_];
 
 export function Nav() {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => setLoggedIn(!!user));
+  }, [pathname]);
+
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    setLoggedIn(false);
+    router.push("/");
+  }
 
   if (pathname.startsWith("/coach")) return null;
 
@@ -81,6 +96,17 @@ export function Nav() {
             })}
             <div aria-hidden="true" className="mx-1 h-4 w-px" style={{ background: "var(--border)" }} />
             <ThemeToggle />
+            {loggedIn && (
+              <button
+                onClick={handleSignOut}
+                aria-label="Sign out"
+                className="flex items-center gap-1.5 rounded-[var(--r-button)] px-3 py-1.5 text-[0.8125rem] transition-colors"
+                style={{ color: "var(--muted-foreground)" }}
+              >
+                <LogOut size={13} />
+                Sign out
+              </button>
+            )}
           </div>
 
           {/* Mobile: theme toggle + hamburger */}
@@ -124,6 +150,16 @@ export function Nav() {
                 </Link>
               );
             })}
+            {loggedIn && (
+              <button
+                onClick={() => { setOpen(false); handleSignOut(); }}
+                className="flex items-center gap-2 rounded-[var(--r-button)] px-3 py-3 text-[0.9375rem] transition-colors text-left"
+                style={{ color: "var(--muted-foreground)" }}
+              >
+                <LogOut size={15} />
+                Sign out
+              </button>
+            )}
           </nav>
         </div>
       )}

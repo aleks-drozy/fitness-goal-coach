@@ -35,12 +35,8 @@ export default function PhotosPage() {
           base64Value={photos.currentPhotoBase64}
           onChange={(b64) => setPhotos({ currentPhotoBase64: b64 })}
         />
-        <PhotoUpload
-          label="Goal physique photo"
-          hint="This may depict a different person's genetics, lighting, or editing. We will account for this."
-          base64Value={photos.goalPhotoBase64}
-          onChange={(b64) => setPhotos({ goalPhotoBase64: b64 })}
-        />
+        {/* Goal physique photo hidden — feature-flagged for recovery if needed */}
+        {/* <PhotoUpload label="Goal physique photo" ... /> */}
       </div>
       {/* Photos are optional — always allow proceeding */}
       <NavButtons
