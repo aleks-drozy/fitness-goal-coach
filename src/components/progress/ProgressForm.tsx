@@ -6,6 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ProgressFormProps {
   nextWeek: number;
@@ -130,20 +137,22 @@ export function ProgressForm({ nextWeek, loggedWeeks }: ProgressFormProps) {
       {/* Week picker — only shown when multiple unlogged weeks exist to backfill */}
       {availableWeeks.length > 1 ? (
         <div className="space-y-1.5">
-          <Label htmlFor="week">Week</Label>
-          <select
-            id="week"
-            value={weekNumber}
-            onChange={(e) => setWeekNumber(Number(e.target.value))}
-            className="w-full rounded-[var(--r-input)] border px-3 py-2 text-sm bg-transparent"
-            style={{ borderColor: "var(--border)", color: "var(--foreground)" }}
+          <Label>Week</Label>
+          <Select
+            value={String(weekNumber)}
+            onValueChange={(v) => setWeekNumber(Number(v))}
           >
-            {availableWeeks.map((w) => (
-              <option key={w} value={w}>
-                Week {w}{w === nextWeek ? " (current)" : " (backfill)"}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {availableWeeks.map((w) => (
+                <SelectItem key={w} value={String(w)}>
+                  Week {w}{w === nextWeek ? " (current)" : " (backfill)"}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       ) : (
         <p className="text-[0.8125rem] font-medium" style={{ color: "var(--muted-foreground)" }}>
