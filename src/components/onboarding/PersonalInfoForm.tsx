@@ -86,12 +86,12 @@ export function PersonalInfoForm() {
           >
             <SelectTrigger className="w-full">
               <SelectValue>
-                {(v: unknown) => ({ beginner: "Beginner (0–1 yr)", intermediate: "Intermediate (1–3 yrs)", advanced: "Advanced (3+ yrs)" }[v as string] ?? "Select")}
+                {(v: unknown) => ({ beginner: "Beginner (0 to 1 yr)", intermediate: "Intermediate (1 to 3 yrs)", advanced: "Advanced (3+ yrs)" }[v as string] ?? "Select")}
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="beginner">Beginner (0–1 yr)</SelectItem>
-              <SelectItem value="intermediate">Intermediate (1–3 yrs)</SelectItem>
+              <SelectItem value="beginner">Beginner (0 to 1 yr)</SelectItem>
+              <SelectItem value="intermediate">Intermediate (1 to 3 yrs)</SelectItem>
               <SelectItem value="advanced">Advanced (3+ yrs)</SelectItem>
             </SelectContent>
           </Select>
@@ -106,18 +106,18 @@ export function PersonalInfoForm() {
               <SelectValue>
                 {(v: unknown) => ({
                   sedentary: "Sedentary (desk job, little exercise)",
-                  light: "Light (1–2 sessions/week)",
-                  moderate: "Moderate (3–4 sessions/week)",
-                  active: "Active (5–6 sessions/week)",
+                  light: "Light (1 to 2 sessions/week)",
+                  moderate: "Moderate (3 to 4 sessions/week)",
+                  active: "Active (5 to 6 sessions/week)",
                   very_active: "Very active (daily + sport)",
                 }[v as string] ?? "Select")}
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="sedentary">Sedentary (desk job, little exercise)</SelectItem>
-              <SelectItem value="light">Light (1–2 sessions/week)</SelectItem>
-              <SelectItem value="moderate">Moderate (3–4 sessions/week)</SelectItem>
-              <SelectItem value="active">Active (5–6 sessions/week)</SelectItem>
+              <SelectItem value="light">Light (1 to 2 sessions/week)</SelectItem>
+              <SelectItem value="moderate">Moderate (3 to 4 sessions/week)</SelectItem>
+              <SelectItem value="active">Active (5 to 6 sessions/week)</SelectItem>
               <SelectItem value="very_active">Very active (daily + sport)</SelectItem>
             </SelectContent>
           </Select>

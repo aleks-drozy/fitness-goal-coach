@@ -242,7 +242,7 @@ export function WeightCutClient({ prefill }: { prefill: Prefill }) {
 
         <div className="space-y-2">
           <Label>
-            Diet quality — {dietQuality}/5 ({["", "Poor", "Below average", "Average", "Good", "Excellent"][dietQuality]})
+            Diet quality: {dietQuality}/5 ({["", "Poor", "Below average", "Average", "Good", "Excellent"][dietQuality]})
           </Label>
           <input
             type="range"

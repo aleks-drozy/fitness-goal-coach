@@ -6,6 +6,7 @@ import { Zap, Menu, X, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { createClient } from "@/lib/supabase/client";
+import { APP_NAME } from "@/lib/config";
 
 const tools = [
   { label: "Calculator", href: "/tools/calculator" },
@@ -56,7 +57,7 @@ export function Nav() {
             >
               <Zap size={12} fill="var(--primary-foreground)" color="var(--primary-foreground)" />
             </div>
-            <span className="text-[0.8125rem] font-semibold">Fitness Coach</span>
+            <span className="text-[0.8125rem] font-semibold">{APP_NAME}</span>
           </Link>
 
           {/* Desktop links */}

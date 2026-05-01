@@ -37,14 +37,14 @@ export default async function PlanPage() {
           </p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight">Your fitness plan</h1>
           <p className="mt-1.5 text-[0.875rem]" style={{ color: "var(--muted-foreground)" }}>
-            AI-generated based on your goals, experience, and training context.
+            Generated from your wizard data: goals, experience level, and weekly schedule.
           </p>
         </div>
 
         {!isPremium ? (
           <PremiumGate
-            feature="AI Training Plan"
-            description="A personalised weekly schedule, nutrition strategy, and sport-specific conditioning plan — generated from your wizard data and updated as you log progress."
+            feature="Training Plan"
+            description="A weekly schedule, nutrition strategy, and sport-specific conditioning plan built from your wizard data, updated as you log progress."
           />
         ) : (
           <PlanClient

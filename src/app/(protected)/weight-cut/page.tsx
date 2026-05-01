@@ -51,7 +51,7 @@ export default async function WeightCutPage() {
         {!isPremium ? (
           <PremiumGate
             feature="Weight Cut Protocol"
-            description="A day-by-day water and nutrition cut plan tailored to your sport, competition date, and weight class — with hard safety limits built in."
+            description="A day-by-day water and nutrition cut plan for your sport, competition date, and weight class. Hard safety limits enforced: no cut over 5% bodyweight in under 14 days."
           />
         ) : (
           <WeightCutClient prefill={prefill} />

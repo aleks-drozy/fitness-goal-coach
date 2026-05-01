@@ -33,7 +33,7 @@ export function SummaryCard({ estimate, latestEntry }: SummaryCardProps) {
       {estimate ? (
         <div className="flex items-end gap-1.5">
           <span className="text-4xl font-bold tracking-[-0.03em]" style={{ letterSpacing: "-0.04em" }}>
-            {estimate.timeframeMin}–{estimate.timeframeMax}
+            {estimate.timeframeMin} to {estimate.timeframeMax}
           </span>
           <span className="mb-1 text-lg" style={{ color: "var(--muted-foreground)" }}>
             {estimate.timeframeUnit}

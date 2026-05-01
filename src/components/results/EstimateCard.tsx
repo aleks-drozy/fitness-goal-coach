@@ -39,7 +39,7 @@ export function EstimateCard({ result }: EstimateCardProps) {
           className="font-bold leading-none"
           style={{ fontSize: "4rem", letterSpacing: "-0.04em", color: "var(--foreground)" }}
         >
-          {result.timeframeMin}–{result.timeframeMax}
+          {result.timeframeMin} to {result.timeframeMax}
           <span
             className="font-normal ml-3"
             style={{ fontSize: "1.5rem", letterSpacing: "0", color: "var(--muted-foreground)" }}

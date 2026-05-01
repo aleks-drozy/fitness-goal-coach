@@ -24,7 +24,7 @@ export default function JudoPage() {
       <ProgressBar currentStep={3} totalSteps={4} />
       <StepHeader
         title="Grappling training details"
-        subtitle="We'll factor your mat load into the S&C recommendations so the plan supports — not fights — your training."
+        subtitle="We'll factor your mat load into the S&C recommendations so the plan works with your training, not against it."
         step={3}
         totalSteps={4}
       />

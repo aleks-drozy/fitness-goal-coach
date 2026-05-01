@@ -9,7 +9,7 @@ export default function UpsellPage() {
     <div className="space-y-8">
       <StepHeader
         title="Want a full plan?"
-        subtitle="Your free estimate is ready. Upgrade to get a detailed, personalised coaching plan."
+        subtitle="Your free estimate is ready. Upgrade for a full training and weight cut plan."
       />
       <PremiumCard />
       <div className="text-center">

@@ -15,7 +15,7 @@ export function FeedbackCallout({ weekNumber, feedback, onTrack }: FeedbackCallo
           className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em]"
           style={{ color: "var(--primary)" }}
         >
-          Coach feedback — Week {weekNumber}
+          Coach feedback: Week {weekNumber}
         </p>
         {onTrack !== null && (
           <div className="flex items-center gap-1.5">

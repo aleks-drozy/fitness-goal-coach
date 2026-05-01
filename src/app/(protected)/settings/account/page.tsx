@@ -1,10 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
+import { APP_NAME } from "@/lib/config";
 
 export default function AccountSettingsPage() {
   const router = useRouter();
@@ -12,11 +15,19 @@ export default function AccountSettingsPage() {
   const [confirmInput, setConfirmInput] = useState("");
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [isPremium, setIsPremium] = useState<boolean | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user?.email) setEmail(user.email);
+      if (!user) return;
+      if (user.email) setEmail(user.email);
+      supabase
+        .from("profiles")
+        .select("is_premium")
+        .eq("id", user.id)
+        .maybeSingle()
+        .then(({ data }) => setIsPremium(data?.is_premium ?? false));
     });
   }, []);
 
@@ -56,6 +67,25 @@ export default function AccountSettingsPage() {
         <div>
           <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--primary)" }}>Settings</p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight">Account</h1>
+        </div>
+
+        {/* Plan */}
+        <div className="space-y-4 rounded-[var(--r-card)] border p-6" style={{ borderColor: "var(--border)", background: "var(--surface)" }}>
+          <div>
+            <h2 className="text-base font-semibold">Plan</h2>
+            <p className="mt-1 text-[0.875rem]" style={{ color: "var(--muted-foreground)" }}>
+              {isPremium === null
+                ? "Loading…"
+                : isPremium
+                ? "Premium"
+                : `Free. Early access to ${APP_NAME}.`}
+            </p>
+          </div>
+          {isPremium === false && (
+            <Link href="/upgrade" className={cn(buttonVariants({ variant: "outline", size: "sm" }))}>
+              Upgrade to Premium
+            </Link>
+          )}
         </div>
 
         {/* Sign out */}

@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { createServiceClient } from "@/lib/supabase/service";
-
-const APP_NAME = "Combat Goal Coach";
+import { APP_NAME } from "@/lib/config";
 
 export async function GET(req: NextRequest) {
   const resend = new Resend(process.env.RESEND_API_KEY);
@@ -91,8 +90,8 @@ export async function GET(req: NextRequest) {
         ${compLine}
         ${sportLine}
         <p style="color:#666;line-height:1.6;margin-bottom:24px;">
-          You haven't logged a check-in this week. Even a quick note helps your AI coach
-          track your trajectory and keep your plan on point.
+          You haven't logged a check-in this week. Even a quick note keeps your trajectory
+          accurate and your plan on point.
         </p>
         <a href="${process.env.NEXT_PUBLIC_APP_URL ?? "https://yourapp.com"}/progress"
            style="display:inline-block;background:#d97706;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;">

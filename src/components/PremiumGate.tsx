@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { APP_NAME } from "@/lib/config";
 
 interface PremiumGateProps {
   feature: string;        // short name shown in heading, e.g. "Training plan"
@@ -31,7 +32,7 @@ export function PremiumGate({ feature, description }: PremiumGateProps) {
         className="rounded-[var(--r-card)] border px-4 py-3 text-[0.8125rem]"
         style={{ borderColor: "var(--primary)", background: "var(--accent-dim)", color: "var(--primary)" }}
       >
-        This feature is included in Combat Goal Coach Premium.
+        This feature is included in {APP_NAME} Premium.
       </div>
 
       <Link

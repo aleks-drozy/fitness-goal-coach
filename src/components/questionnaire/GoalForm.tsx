@@ -117,7 +117,7 @@ export function GoalForm() {
           }}
         />
         <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-          Skip if unsure — your other inputs are sufficient.
+          Skip if unsure. Your other inputs are sufficient.
         </p>
       </div>
       <div className="space-y-1.5">

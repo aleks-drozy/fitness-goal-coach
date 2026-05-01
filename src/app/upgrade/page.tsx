@@ -10,7 +10,7 @@ const FREE_FEATURES = [
 ];
 
 const PREMIUM_FEATURES = [
-  "AI-generated weekly training plan",
+  "Weekly training plan built for your schedule and goals",
   "Day-by-day weight cut protocol",
   "Auto-updated plan when progress deviates",
   "Competition periodization (strength → taper)",

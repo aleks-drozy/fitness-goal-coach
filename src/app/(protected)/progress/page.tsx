@@ -36,7 +36,7 @@ export default async function ProgressPage() {
             </Link>
           )}
           <p className="mt-1.5 text-[0.875rem]" style={{ color: "var(--muted-foreground)" }}>
-            Log your weight and how the week went. Your AI coach will review your trajectory.
+            Log your weight and how the week went. Maken reviews your numbers and flags if you're off track.
           </p>
         </div>
 

@@ -106,9 +106,9 @@ export function ProgressForm({ nextWeek, loggedWeeks }: ProgressFormProps) {
             className="rounded-[var(--r-input)] border px-3 py-2.5 text-[0.8125rem]"
             style={{ borderColor: "var(--primary)", background: "var(--accent-dim)" }}
           >
-            <span className="font-medium" style={{ color: "var(--primary)" }}>Your plan was automatically updated</span>
-            {" — "}
-            <a href="/plan" style={{ color: "var(--primary)", textDecoration: "underline" }}>view updated plan</a>
+            <span className="font-medium" style={{ color: "var(--primary)" }}>Your plan was automatically updated.</span>
+            {" "}
+            <a href="/plan" style={{ color: "var(--primary)", textDecoration: "underline" }}>View updated plan</a>
           </div>
         )}
 

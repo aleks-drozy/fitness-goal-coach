@@ -5,12 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 const features = [
-  "Detailed weekly training plan tailored to your goal",
+  "Detailed weekly training plan built around your goal",
   "Nutrition guidance with calorie and protein targets",
-  "Weekly AI check-ins with updated timeline",
+  "Weekly check-ins with updated timeline",
   "Recovery and sleep recommendations",
   "Injury-aware exercise modifications",
-  "Judo S&C integration — strength work around your mat sessions",
+  "Judo S&C integration: strength work built around your mat sessions",
   "Plan adjustments as your progress changes",
 ];
 
@@ -106,7 +106,7 @@ export function PremiumCard() {
               <p className="text-[0.8125rem]" style={{ color: "var(--destructive)" }}>{error}</p>
             )}
             <Button type="submit" className="w-full" size="lg" disabled={loading}>
-              {loading ? "Joining…" : "Join waitlist — get early access"}
+              {loading ? "Joining…" : "Join waitlist for early access"}
             </Button>
           </form>
         )}

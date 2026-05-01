@@ -4,12 +4,13 @@ import "./globals.css";
 import { WizardProvider } from "@/context/WizardContext";
 import { Nav } from "@/components/layout/Nav";
 import { ThemeProvider } from "next-themes";
+import { APP_NAME, APP_TAGLINE } from "@/lib/config";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "Fitness Goal Coach",
-  description: "Get a realistic estimate of what your fitness goal may take.",
+  title: APP_NAME,
+  description: `${APP_TAGLINE} Competition prep for judo and BJJ athletes.`,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

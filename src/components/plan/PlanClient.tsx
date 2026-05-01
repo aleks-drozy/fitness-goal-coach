@@ -42,7 +42,7 @@ export function PlanClient({ initialPlan, hasProfile }: PlanClientProps) {
         style={{ borderColor: "var(--border)", background: "var(--surface)" }}
       >
         <p className="text-[0.875rem]" style={{ color: "var(--muted-foreground)" }}>
-          Complete the fitness wizard first to generate a personalized plan.
+          Complete the wizard to generate your plan.
         </p>
         <Link
           href="/coach"
@@ -64,7 +64,7 @@ export function PlanClient({ initialPlan, hasProfile }: PlanClientProps) {
         <div>
           <p className="text-[0.875rem] font-medium">No plan yet</p>
           <p className="mt-1 text-[0.8125rem]" style={{ color: "var(--muted-foreground)" }}>
-            Generate a personalized weekly schedule, nutrition strategy, and recovery plan based on your wizard results.
+            Generate a weekly schedule, nutrition strategy, and recovery plan from your wizard data.
           </p>
         </div>
         {error && (

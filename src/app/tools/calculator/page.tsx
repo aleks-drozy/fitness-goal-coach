@@ -58,7 +58,7 @@ export default function CalculatorPage() {
           <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--primary)" }}>Tools</p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight">Body stats calculator</h1>
           <p className="mt-1.5 text-[0.875rem]" style={{ color: "var(--muted-foreground)" }}>
-            BMI, TDEE, body fat %, and ideal weight — all client-side, no data sent anywhere.
+            BMI, TDEE, body fat %, and ideal weight. All calculations run client-side; no data is sent anywhere.
           </p>
         </div>
 
@@ -150,7 +150,7 @@ export default function CalculatorPage() {
                 { label: "BMI", value: `${results.bmiValue}`, sub: results.bmiCategory, color: bmiColor },
                 { label: "TDEE (daily calories)", value: `${results.tdeeValue} kcal`, sub: "Maintenance calories", color: "var(--foreground)" },
                 ...(results.bfValue !== null ? [{ label: "Body fat %", value: `${results.bfValue}%`, sub: "US Navy formula", color: "var(--foreground)" }] : []),
-                { label: "Ideal weight range", value: `${results.idealMin}–${results.idealMax} kg`, sub: "Devine formula", color: "var(--foreground)" },
+                { label: "Ideal weight range", value: `${results.idealMin} to ${results.idealMax} kg`, sub: "Devine formula", color: "var(--foreground)" },
               ].map((item) => (
                 <motion.div
                   key={item.label}

@@ -217,17 +217,17 @@ export default async function DashboardPage() {
               </div>
               {weeksLogged >= 12 && (
                 <p className="text-[0.8125rem]" style={{ color: "var(--success)" }}>
-                  Exceptional commitment — 12+ weeks in.
+                  Exceptional commitment. 12 weeks in.
                 </p>
               )}
               {weeksLogged >= 8 && weeksLogged < 12 && (
                 <p className="text-[0.8125rem]" style={{ color: "var(--success)" }}>
-                  8 weeks strong. You&apos;re building a real habit.
+                  8 weeks logged.
                 </p>
               )}
               {weeksLogged >= 4 && weeksLogged < 8 && (
                 <p className="text-[0.8125rem]" style={{ color: "var(--success)" }}>
-                  4 weeks consistent. Keep the momentum.
+                  4 weeks logged.
                 </p>
               )}
             </div>
@@ -305,7 +305,7 @@ export default async function DashboardPage() {
           >
             <p className="text-[0.875rem] font-medium">Complete your profile</p>
             <p className="mt-1 text-[0.8125rem]" style={{ color: "var(--muted-foreground)" }}>
-              Run the fitness wizard to get your personalized estimate and unlock plan generation.
+              Complete the wizard to get your estimate and generate a training plan.
             </p>
             <Link href="/coach" className={cn(buttonVariants({ size: "sm" }), "mt-4")}>
               Start wizard

@@ -14,12 +14,12 @@ const FEATURES = [
   {
     n: "02",
     title: "Plans built for grapplers",
-    body: "Not generic gym programmes. Your plan accounts for mat sessions, drilling, randori, and recovery — generated around your schedule and any injuries.",
+    body: "Not generic gym programmes. Your plan accounts for mat sessions, drilling, randori, and recovery, built around your schedule and any injuries.",
   },
   {
     n: "03",
     title: "Stay on track, week by week",
-    body: "Log your weight each week. Your AI coach analyses your trajectory, flags when you're off course, and adjusts your plan automatically.",
+    body: "Log your weight each week. Maken tracks your trajectory, flags when you're off course, and adjusts your plan automatically.",
   },
 ] as const;
 
@@ -96,9 +96,9 @@ export default function LandingPage() {
             className="mx-auto mb-10 text-[1rem] leading-[1.7] sm:text-[1.0625rem]"
             style={{ color: "var(--muted-foreground)", maxWidth: "36rem" }}
           >
-            AI-powered competition prep for judo and BJJ athletes.
-            Get a personalised weight cut protocol, training plan, and weekly check-ins
-            — built around your weight class and tournament date.
+            Make weight, fight fresh. Competition prep for judo and BJJ athletes:
+            weight cut protocol, training plan, and weekly check-ins built around
+            your weight class and tournament date.
           </motion.p>
 
           {/* Primary CTA */}
