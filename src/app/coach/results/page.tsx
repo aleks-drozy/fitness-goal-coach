@@ -253,7 +253,7 @@ export default function ResultsPage() {
             {isLoggedIn === false && (
               <motion.div variants={fadeUp}>
                 <div
-                  className="rounded-[var(--r-card)] border p-5 text-center"
+                  className="rounded-[var(--r-card)] border p-5"
                   style={{ borderColor: "var(--border)", background: "var(--surface)" }}
                 >
                   <p className="text-[0.875rem] font-medium">Save your results</p>
@@ -262,7 +262,7 @@ export default function ResultsPage() {
                   </p>
                   <Link
                     href="/signup"
-                    className={cn(buttonVariants({ variant: "outline", size: "sm" }), "mt-4")}
+                    className={cn(buttonVariants({ variant: "outline", size: "sm" }), "mt-4 inline-flex")}
                   >
                     Create free account
                   </Link>

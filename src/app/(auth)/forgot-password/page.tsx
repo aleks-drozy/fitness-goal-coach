@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Zap } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -34,17 +33,12 @@ export default function ForgotPasswordPage() {
 
   if (sent) {
     return (
-      <div className="w-full max-w-sm text-center">
+      <div className="w-full max-w-sm">
         <div
           className="rounded-[var(--r-card)] border border-border bg-card px-8 py-12"
           style={{ boxShadow: "0 0 0 1px oklch(0.72 0.19 58 / 4%), 0 8px 32px oklch(0 0 0 / 28%)" }}
         >
-          <div
-            className="mx-auto mb-5 flex size-12 items-center justify-center rounded-full"
-            style={{ background: "var(--success-dim)" }}
-          >
-            <Zap size={20} color="var(--success)" />
-          </div>
+          <p className="mb-2 text-[0.6875rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--success)" }}>Reset link sent</p>
           <h2 className="text-lg font-semibold">Check your email</h2>
           <p className="mt-2 text-[0.875rem] text-muted-foreground">
             We sent a reset link to{" "}
@@ -67,13 +61,7 @@ export default function ForgotPasswordPage() {
         className="rounded-[var(--r-card)] border border-border bg-card px-8 py-10"
         style={{ boxShadow: "0 0 0 1px oklch(0.72 0.19 58 / 4%), 0 8px 32px oklch(0 0 0 / 28%)" }}
       >
-        <div className="mb-8 text-center">
-          <div
-            className="mb-4 inline-flex size-10 items-center justify-center rounded-full"
-            style={{ background: "var(--primary)" }}
-          >
-            <Zap size={18} fill="var(--primary-foreground)" color="var(--primary-foreground)" />
-          </div>
+        <div className="mb-8">
           <h1 className="text-xl font-semibold tracking-tight">Reset password</h1>
           <p className="mt-1 text-[0.875rem] text-muted-foreground">
             Enter your email and we&apos;ll send a reset link

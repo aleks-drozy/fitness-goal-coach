@@ -249,7 +249,7 @@ export default async function DashboardPage() {
           {chartData.length >= 2 ? (
             <ProgressChart data={chartData} />
           ) : (
-            <p className="text-[0.875rem] py-6 text-center" style={{ color: "var(--muted-foreground)" }}>
+            <p className="text-[0.875rem] py-6" style={{ color: "var(--muted-foreground)" }}>
               {chartData.length === 0
                 ? "Log your first check-in to start tracking."
                 : "Log one more week to see your weight trend."}

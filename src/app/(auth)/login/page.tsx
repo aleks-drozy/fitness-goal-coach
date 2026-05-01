@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Zap } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -40,13 +39,7 @@ export default function LoginPage() {
         className="rounded-[var(--r-card)] border border-border bg-card px-8 py-10"
         style={{ boxShadow: "0 0 0 1px oklch(0.72 0.19 58 / 4%), 0 8px 32px oklch(0 0 0 / 28%)" }}
       >
-        <div className="mb-8 text-center">
-          <div
-            className="mb-4 inline-flex size-10 items-center justify-center rounded-full"
-            style={{ background: "var(--primary)" }}
-          >
-            <Zap size={18} fill="var(--primary-foreground)" color="var(--primary-foreground)" />
-          </div>
+        <div className="mb-8">
           <h1 className="text-xl font-semibold tracking-tight">Welcome back</h1>
           <p className="mt-1 text-[0.875rem] text-muted-foreground">
             Sign in to your account

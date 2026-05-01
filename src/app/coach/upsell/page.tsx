@@ -12,12 +12,12 @@ export default function UpsellPage() {
         subtitle="Your free estimate is ready. Upgrade for a full training and weight cut plan."
       />
       <PremiumCard />
-      <div className="text-center">
+      <div>
         <Link
           href="/coach/results"
           className={cn(
             buttonVariants({ variant: "ghost", size: "sm" }),
-            "text-sm"
+            "text-sm px-0"
           )}
           style={{ color: "var(--muted-foreground)" }}
         >
