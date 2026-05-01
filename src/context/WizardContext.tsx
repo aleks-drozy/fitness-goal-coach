@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { WizardState, OnboardingData, PhotoData, QuestionnaireData, JudoData, CompetitionContext, EstimateResult, Sport } from "@/lib/types";
+import { WizardState, OnboardingData, QuestionnaireData, JudoData, CompetitionContext, EstimateResult, Sport } from "@/lib/types";
 
 const STORAGE_KEY = "fitness-wizard-state";
 
@@ -15,11 +15,6 @@ const defaultState: WizardState = {
     targetWeight: null,
     experience: null,
     activityLevel: null,
-  },
-  photos: {
-    consentGiven: false,
-    currentPhotoBase64: null,
-    goalPhotoBase64: null,
   },
   questionnaire: {
     goalType: null,
@@ -47,16 +42,7 @@ function loadFromStorage(): WizardState {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaultState;
     const parsed = JSON.parse(raw) as Partial<WizardState>;
-    return {
-      ...defaultState,
-      ...parsed,
-      // Never restore base64 blobs — too large and stale after a refresh
-      photos: {
-        ...(parsed.photos ?? defaultState.photos),
-        currentPhotoBase64: null,
-        goalPhotoBase64: null,
-      },
-    };
+    return { ...defaultState, ...parsed };
   } catch {
     return defaultState;
   }
@@ -64,12 +50,7 @@ function loadFromStorage(): WizardState {
 
 function saveToStorage(state: WizardState) {
   try {
-    const toSave = {
-      ...state,
-      // Never persist base64 blobs — too large and stale after a refresh
-      photos: { consentGiven: state.photos.consentGiven, currentPhotoBase64: null, goalPhotoBase64: null },
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch {
     // storage quota exceeded or private mode — silently ignore
   }
@@ -79,7 +60,6 @@ interface WizardContextValue {
   state: WizardState;
   hydrated: boolean;
   setOnboarding: (data: Partial<OnboardingData>) => void;
-  setPhotos: (data: Partial<PhotoData>) => void;
   setQuestionnaire: (data: Partial<QuestionnaireData>) => void;
   setJudo: (data: Partial<JudoData>) => void;
   setCompetitionContext: (data: Partial<CompetitionContext>) => void;
@@ -105,9 +85,6 @@ export function WizardProvider({ children }: { children: ReactNode }) {
   const setOnboarding = (data: Partial<OnboardingData>) =>
     setState((s) => ({ ...s, onboarding: { ...s.onboarding, ...data } }));
 
-  const setPhotos = (data: Partial<PhotoData>) =>
-    setState((s) => ({ ...s, photos: { ...s.photos, ...data } }));
-
   const setQuestionnaire = (data: Partial<QuestionnaireData>) =>
     setState((s) => ({ ...s, questionnaire: { ...s.questionnaire, ...data } }));
 
@@ -126,7 +103,7 @@ export function WizardProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <WizardContext.Provider value={{ state, hydrated, setOnboarding, setPhotos, setQuestionnaire, setJudo, setCompetitionContext, setEstimateResult, clearWizard }}>
+    <WizardContext.Provider value={{ state, hydrated, setOnboarding, setQuestionnaire, setJudo, setCompetitionContext, setEstimateResult, clearWizard }}>
       {children}
     </WizardContext.Provider>
   );

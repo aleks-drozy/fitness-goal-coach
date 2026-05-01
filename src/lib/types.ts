@@ -17,17 +17,12 @@ export interface OnboardingData {
   activityLevel: ActivityLevel | null;
 }
 
-export interface PhotoData {
-  consentGiven: boolean;
-  currentPhotoBase64: string | null;
-  goalPhotoBase64: string | null;
-}
-
 export interface QuestionnaireData {
   goalType: GoalType | null;
   workoutSetting: WorkoutSetting | null;
   injuries: string;
   sport: Sport;
+  bodyFatPercent?: number;
 }
 
 export interface JudoData {
@@ -45,7 +40,6 @@ export interface CompetitionContext {
 
 export interface WizardState {
   onboarding: OnboardingData;
-  photos: PhotoData;
   questionnaire: QuestionnaireData;
   judo: JudoData;
   competitionContext: CompetitionContext;

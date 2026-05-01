@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useWizard } from "@/context/WizardContext";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -93,6 +94,31 @@ export function GoalForm() {
             <SelectItem value="both">Both</SelectItem>
           </SelectContent>
         </Select>
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="bodyFatPercent">
+          Body fat %
+          <span className="ml-1.5 text-xs font-normal" style={{ color: "var(--muted-foreground)" }}>
+            optional
+          </span>
+        </Label>
+        <Input
+          id="bodyFatPercent"
+          type="number"
+          min="3"
+          max="60"
+          placeholder="e.g. 18"
+          style={{ MozAppearance: "textfield" } as React.CSSProperties}
+          className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          value={questionnaire.bodyFatPercent ?? ""}
+          onChange={(e) => {
+            const v = e.target.value === "" ? undefined : parseFloat(e.target.value);
+            setQuestionnaire({ bodyFatPercent: v });
+          }}
+        />
+        <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+          Skip if unsure — your other inputs are sufficient.
+        </p>
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="injuries">

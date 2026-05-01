@@ -16,7 +16,7 @@ function sportSpecificNotes(sport: string): string {
   }
 }
 
-export function buildEstimatePrompt(state: WizardState, hasPhotos: boolean): string {
+export function buildEstimatePrompt(state: WizardState): string {
   const { onboarding, questionnaire, judo, competitionContext } = state;
   const sport = questionnaire.sport;
   const isGrappling = GRAPPLING_SPORTS.has(sport);
@@ -72,12 +72,9 @@ SPORT TRAINING:
 `
     : "";
 
-  const photoSection = hasPhotos
-    ? `
-PHOTO CONTEXT:
-The user has uploaded a current body photo. Use the visual information to inform your physique assessment. Do not over-promise based on photos — lighting, posture, and camera angle all affect appearance.
-`
-    : "";
+  const bodyFatLine = questionnaire.bodyFatPercent
+    ? `- Body fat %: ${questionnaire.bodyFatPercent}% (use this to refine lean mass estimate and adjust caloric deficit recommendation accordingly)`
+    : `- Body fat %: not provided`;
 
   const targetWeightLine =
     onboarding.targetWeight !== null && onboarding.targetWeight !== undefined
@@ -92,7 +89,8 @@ USER PROFILE:
 - Sex: ${onboarding.sex}
 - Height: ${onboarding.heightCm} cm
 - Current weight: ${onboarding.weightKg} kg
-${targetWeightLine}- Training experience: ${onboarding.experience}
+${targetWeightLine}${bodyFatLine}
+- Training experience: ${onboarding.experience}
 - Activity level: ${onboarding.activityLevel}
 
 GOAL:
@@ -100,7 +98,7 @@ GOAL:
 - Workout setting: ${questionnaire.workoutSetting}
 - Injuries/limitations: ${questionnaire.injuries || "none reported"}
 - Sport: ${questionnaire.sport}
-${combatSportSection}${photoSection}
+${combatSportSection}
 TASK:
 Return a JSON object with this exact structure. Do not include any text outside the JSON.
 

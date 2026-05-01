@@ -30,17 +30,17 @@ export default function QuestionnairePage() {
 
   return (
     <>
-      <ProgressBar currentStep={3} totalSteps={5} />
+      <ProgressBar currentStep={2} totalSteps={4} />
       <StepHeader
         title="Your goal and training"
         subtitle="A few more details help us tailor the estimate to your situation."
-        step={3}
-        totalSteps={5}
+        step={2}
+        totalSteps={4}
       />
       <GoalForm />
       <SportSelector />
       <NavButtons
-        backHref="/coach/photos"
+        backHref="/coach/onboarding"
         onNext={handleNext}
         disabled={!isValid}
       />

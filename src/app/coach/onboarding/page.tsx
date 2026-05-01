@@ -21,16 +21,16 @@ export default function OnboardingPage() {
 
   return (
     <>
-      <ProgressBar currentStep={1} totalSteps={5} />
+      <ProgressBar currentStep={1} totalSteps={4} />
       <StepHeader
         title="Tell us about yourself"
         subtitle="This helps us give you a more accurate estimate. All information stays on your device."
         step={1}
-        totalSteps={5}
+        totalSteps={4}
       />
       <PersonalInfoForm />
       <NavButtons
-        nextHref="/coach/photos"
+        nextHref="/coach/questionnaire"
         disabled={!isValid}
         nextLabel="Continue"
       />

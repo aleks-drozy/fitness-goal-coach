@@ -21,12 +21,12 @@ export default function JudoPage() {
 
   return (
     <>
-      <ProgressBar currentStep={4} totalSteps={5} />
+      <ProgressBar currentStep={3} totalSteps={4} />
       <StepHeader
         title="Grappling training details"
         subtitle="We'll factor your mat load into the S&C recommendations so the plan supports — not fights — your training."
-        step={4}
-        totalSteps={5}
+        step={3}
+        totalSteps={4}
       />
       <JudoForm />
       <NavButtons

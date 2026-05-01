@@ -117,10 +117,7 @@ export default function ResultsPage() {
         if (user) {
           supabase.from("profiles").upsert({
             id: user.id,
-            wizard_state: {
-              ...state,
-              photos: { consentGiven: state.photos.consentGiven, currentPhotoBase64: null, goalPhotoBase64: null },
-            },
+            wizard_state: state,
             estimate_result: r,
           }).then(({ error }) => {
             if (error) console.error("Profile upsert failed:", error.message);
@@ -188,7 +185,7 @@ export default function ResultsPage() {
       {!loading && result && (
         <motion.div key="results" variants={stagger} initial="hidden" animate="show">
           <motion.div variants={fadeUp}>
-            <ProgressBar currentStep={5} totalSteps={5} />
+            <ProgressBar currentStep={4} totalSteps={4} />
           </motion.div>
 
           {!isCompeting && (
@@ -197,7 +194,7 @@ export default function ResultsPage() {
                 title={`${onboarding.name ? onboarding.name + "'s" : "Your"} estimate`}
                 subtitle="Based on what you've told us. This is a realistic range, not a guarantee."
                 step={5}
-                totalSteps={5}
+                totalSteps={4}
               />
             </motion.div>
           )}
