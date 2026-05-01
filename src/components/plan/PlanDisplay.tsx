@@ -56,53 +56,65 @@ function sportDisplayName(sport?: string | null): string {
 
 export function PlanDisplay({ plan }: PlanDisplayProps) {
   return (
-    <div className="space-y-6">
-      {/* Periodization overview — shown above schedule when present */}
+    <div className="space-y-8">
+      {/* Periodization overview — plain text above schedule, no card */}
       {plan.periodization_notes && (
         <div className="space-y-2">
           <SectionLabel>Programme overview</SectionLabel>
-          <div
-            className="rounded-[var(--r-card)] border p-4"
-            style={{ borderColor: "var(--primary)", background: "var(--accent-dim)" }}
-          >
-            <p className="text-[0.875rem] leading-relaxed">{plan.periodization_notes}</p>
-          </div>
+          <p className="text-[0.875rem] leading-relaxed" style={{ color: "var(--muted-foreground)", maxWidth: "56ch" }}>
+            {plan.periodization_notes}
+          </p>
         </div>
       )}
 
-      {/* Weekly schedule */}
-      <div className="space-y-3">
-        <SectionLabel>Weekly schedule</SectionLabel>
-        <div className="space-y-2">
-          {(plan.weekly_schedule ?? []).map((session, i) => (
-            <div
-              key={i}
-              className="rounded-[var(--r-card)] border p-4 space-y-2"
-              style={{ borderColor: "var(--border)", background: "var(--surface)" }}
-            >
-              <div className="flex items-baseline gap-3">
-                <span className="text-[0.875rem] font-semibold">{session.day}</span>
-                <span className="text-[0.8125rem]" style={{ color: "var(--muted-foreground)" }}>
-                  {session.focus}
-                </span>
+      {/* Weekly schedule — compact table, not stacked cards */}
+      {(plan.weekly_schedule ?? []).length > 0 && (
+        <div className="space-y-3">
+          <SectionLabel>Weekly schedule</SectionLabel>
+          <div
+            className="rounded-[var(--r-card)] border overflow-hidden"
+            style={{ borderColor: "var(--border)" }}
+          >
+            {(plan.weekly_schedule ?? []).map((session, i) => (
+              <div
+                key={i}
+                className="px-5 py-4 space-y-2"
+                style={{
+                  borderTop: i > 0 ? `1px solid var(--border)` : undefined,
+                  background: "var(--surface)",
+                }}
+              >
+                <div className="flex items-baseline gap-3">
+                  <span
+                    className="shrink-0 text-[0.75rem] font-semibold uppercase tracking-wider tabular-nums"
+                    style={{ color: "var(--primary)", minWidth: "2.5rem" }}
+                  >
+                    {session.day.slice(0, 3).toUpperCase()}
+                  </span>
+                  <span className="text-[0.8125rem] font-medium" style={{ color: "var(--foreground)" }}>
+                    {session.focus}
+                  </span>
+                </div>
+                {(session.exercises ?? []).length > 0 && (
+                  <ul className="space-y-0.5 pl-[3.5rem]">
+                    {(session.exercises ?? []).map((ex, j) => (
+                      <li key={j} className="flex items-start gap-2 text-[0.8125rem]">
+                        <span
+                          className="shrink-0 tabular-nums text-[0.625rem] font-semibold mt-[0.2em]"
+                          style={{ color: "var(--muted-foreground)" }}
+                        >
+                          {String(j + 1).padStart(2, "0")}
+                        </span>
+                        <span style={{ color: "var(--muted-foreground)", lineHeight: "1.55" }}>{ex}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
-              <ul className="space-y-1">
-                {(session.exercises ?? []).map((ex, j) => (
-                  <li key={j} className="flex items-start gap-2 text-[0.8125rem]">
-                    <span
-                      className="mt-[0.2em] shrink-0 text-[0.625rem] font-semibold tabular-nums"
-                      style={{ color: "var(--primary)" }}
-                    >
-                      {String(j + 1).padStart(2, "0")}
-                    </span>
-                    <span style={{ color: "var(--muted-foreground)" }}>{ex}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Nutrition */}
       <div className="space-y-3">
@@ -116,8 +128,8 @@ export function PlanDisplay({ plan }: PlanDisplayProps) {
             { label: "Protein", value: plan.nutrition?.protein_target ?? "—" },
             { label: "Meal timing", value: plan.nutrition?.meal_timing ?? "—" },
           ].map(({ label, value }) => (
-            <div key={label} className="px-4 py-3 space-y-0.5">
-              <p className="text-[0.75rem] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+            <div key={label} className="px-5 py-3 space-y-0.5">
+              <p className="text-[0.75rem] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
                 {label}
               </p>
               <p className="text-[0.875rem]">{value}</p>
@@ -126,7 +138,7 @@ export function PlanDisplay({ plan }: PlanDisplayProps) {
         </div>
       </div>
 
-      {/* Sport-specific (conditional) — label reads actual sport name */}
+      {/* Sport-specific (conditional) */}
       {plan.judo_specific && (
         <div className="space-y-3">
           <SectionLabel>{sportDisplayName(plan.sport)} training</SectionLabel>
@@ -134,14 +146,14 @@ export function PlanDisplay({ plan }: PlanDisplayProps) {
             className="rounded-[var(--r-card)] border divide-y"
             style={{ borderColor: "var(--border)", background: "var(--surface)" }}
           >
-            <div className="px-4 py-3 space-y-0.5">
-              <p className="text-[0.75rem] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+            <div className="px-5 py-3 space-y-0.5">
+              <p className="text-[0.75rem] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
                 Technical focus
               </p>
               <p className="text-[0.875rem]">{plan.judo_specific?.technical_focus ?? "—"}</p>
             </div>
-            <div className="px-4 py-3 space-y-0.5">
-              <p className="text-[0.75rem] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+            <div className="px-5 py-3 space-y-0.5">
+              <p className="text-[0.75rem] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
                 Conditioning priority
               </p>
               <p className="text-[0.875rem]">{plan.judo_specific?.conditioning_priority ?? "—"}</p>
@@ -157,14 +169,14 @@ export function PlanDisplay({ plan }: PlanDisplayProps) {
           className="rounded-[var(--r-card)] border divide-y"
           style={{ borderColor: "var(--border)", background: "var(--surface)" }}
         >
-          <div className="px-4 py-3 space-y-0.5">
-            <p className="text-[0.75rem] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+          <div className="px-5 py-3 space-y-0.5">
+            <p className="text-[0.75rem] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
               Sleep
             </p>
             <p className="text-[0.875rem]">{plan.recovery?.sleep ?? "—"}</p>
           </div>
-          <div className="px-4 py-3 space-y-0.5">
-            <p className="text-[0.75rem] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+          <div className="px-5 py-3 space-y-0.5">
+            <p className="text-[0.75rem] font-semibold uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
               Active recovery
             </p>
             <p className="text-[0.875rem]">{plan.recovery?.active_recovery ?? "—"}</p>

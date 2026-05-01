@@ -11,28 +11,20 @@ interface PremiumGateProps {
 export function PremiumGate({ feature, description }: PremiumGateProps) {
   return (
     <div
-      className="rounded-[var(--r-card)] border p-8 text-center space-y-4"
+      className="rounded-[var(--r-card)] border p-7 space-y-5"
       style={{ borderColor: "var(--border)", background: "var(--surface)" }}
     >
-      <div
-        className="mx-auto flex size-10 items-center justify-center rounded-full text-lg"
-        style={{ background: "var(--accent-dim)", color: "var(--primary)" }}
-      >
-        ⚡
-      </div>
-
       <div className="space-y-1.5">
-        <p className="font-semibold">{feature}</p>
-        <p className="text-[0.875rem]" style={{ color: "var(--muted-foreground)" }}>
+        <p
+          className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em]"
+          style={{ color: "var(--primary)" }}
+        >
+          {APP_NAME} Premium
+        </p>
+        <p className="text-lg font-semibold tracking-tight">{feature}</p>
+        <p className="text-[0.875rem] leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
           {description}
         </p>
-      </div>
-
-      <div
-        className="rounded-[var(--r-card)] border px-4 py-3 text-[0.8125rem]"
-        style={{ borderColor: "var(--primary)", background: "var(--accent-dim)", color: "var(--primary)" }}
-      >
-        This feature is included in {APP_NAME} Premium.
       </div>
 
       <Link
@@ -41,6 +33,13 @@ export function PremiumGate({ feature, description }: PremiumGateProps) {
       >
         Upgrade to Premium →
       </Link>
+
+      <p className="text-[0.8125rem]" style={{ color: "var(--muted-foreground)" }}>
+        Already premium?{" "}
+        <Link href="/dashboard" style={{ color: "var(--primary)" }}>
+          Go to dashboard
+        </Link>
+      </p>
     </div>
   );
 }

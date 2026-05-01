@@ -47,14 +47,9 @@ export default async function ProgressPage() {
         )}
 
         {(!entries || entries.length === 0) && (
-          <div
-            className="rounded-[var(--r-card)] border p-8 text-center"
-            style={{ borderColor: "var(--border)", background: "var(--surface)" }}
-          >
-            <p className="text-[0.875rem]" style={{ color: "var(--muted-foreground)" }}>
-              No check-ins yet. Log your first week above.
-            </p>
-          </div>
+          <p className="text-[0.875rem]" style={{ color: "var(--muted-foreground)" }}>
+            Your weekly weigh-ins will appear here. Log week 1 above to start building your weight trajectory.
+          </p>
         )}
       </div>
     </div>

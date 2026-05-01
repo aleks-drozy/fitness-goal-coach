@@ -24,7 +24,7 @@ export default function UpgradePage() {
       <div className="mx-auto max-w-lg space-y-10">
 
         {/* Header */}
-        <div className="text-center space-y-2">
+        <div className="space-y-2">
           <p
             className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em]"
             style={{ color: "var(--primary)" }}
@@ -113,7 +113,7 @@ export default function UpgradePage() {
           </div>
         </div>
 
-        <p className="text-center text-[0.8125rem]" style={{ color: "var(--muted-foreground)" }}>
+        <p className="text-[0.8125rem]" style={{ color: "var(--muted-foreground)" }}>
           Already have a premium account?{" "}
           <Link href="/dashboard" style={{ color: "var(--primary)" }}>
             Go to dashboard

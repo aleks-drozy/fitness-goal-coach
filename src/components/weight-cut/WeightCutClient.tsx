@@ -288,65 +288,83 @@ export function WeightCutClient({ prefill }: { prefill: Prefill }) {
       </form>
 
       {result && (
-        <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-4">
-          <motion.div
-            variants={slideIn}
-            className="rounded-[var(--r-card)] border p-4"
-            style={{ borderColor: "var(--primary)", background: "var(--accent-dim)" }}
-          >
-            <p className="text-[0.875rem]">
-              <span className="font-semibold" style={{ color: "var(--primary)" }}>{result.kgToCut}kg</span>
-              {" "}to cut in{" "}
-              <span className="font-semibold" style={{ color: "var(--primary)" }}>{result.daysLeft} days</span>
+        <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-8">
+          {/* Summary stat — raw type, no card */}
+          <motion.div variants={slideIn}>
+            <p
+              className="font-bold tabular-nums leading-none"
+              style={{ fontSize: "clamp(2.5rem, 10vw, 3.5rem)", letterSpacing: "-0.04em", color: "var(--foreground)" }}
+            >
+              {result.kgToCut}
+              <span className="ml-1 text-2xl font-normal" style={{ color: "var(--primary)", letterSpacing: "-0.02em" }}>kg</span>
+            </p>
+            <p className="mt-1 text-[0.8125rem] font-medium" style={{ color: "var(--muted-foreground)" }}>
+              to cut in {result.daysLeft} days
             </p>
           </motion.div>
 
+          {/* Week-by-week — compact table, not stacked cards */}
           <motion.div variants={slideIn} className="space-y-3">
             <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--primary)" }}>
               Week-by-week targets
             </p>
-            {result.plan.weeklyTargets.map((w, i) => (
-              <motion.div
-                key={i}
-                variants={slideIn}
-                className="rounded-[var(--r-card)] border p-4 space-y-2"
-                style={{ borderColor: "var(--border)", background: "var(--surface)" }}
-              >
-                <div className="flex items-baseline justify-between">
-                  <span className="text-[0.875rem] font-semibold">Week {w.week}</span>
-                  <span className="text-lg font-bold" style={{ color: "var(--primary)" }}>{w.targetWeight}kg</span>
-                </div>
-                <p className="text-[0.8125rem]" style={{ color: "var(--muted-foreground)" }}>{w.strategy}</p>
-                <div className="grid grid-cols-2 gap-2 text-[0.75rem]" style={{ color: "var(--muted-foreground)" }}>
-                  <div><span className="font-medium">Nutrition:</span> {w.nutrition}</div>
-                  <div><span className="font-medium">Training:</span> {w.training}</div>
-                </div>
-              </motion.div>
-            ))}
+            <div
+              className="rounded-[var(--r-card)] border overflow-hidden divide-y"
+              style={{ borderColor: "var(--border)" }}
+            >
+              {result.plan.weeklyTargets.map((w, i) => (
+                <motion.div
+                  key={i}
+                  variants={slideIn}
+                  className="px-5 py-4 space-y-1.5"
+                  style={{ background: "var(--surface)" }}
+                >
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="text-[0.75rem] font-semibold uppercase tracking-wider" style={{ color: "var(--primary)" }}>
+                      Week {w.week}
+                    </span>
+                    <span className="text-[1rem] font-bold tabular-nums" style={{ color: "var(--foreground)" }}>
+                      {w.targetWeight}kg
+                    </span>
+                  </div>
+                  <p className="text-[0.8125rem] leading-relaxed" style={{ color: "var(--muted-foreground)" }}>{w.strategy}</p>
+                  <div className="flex gap-6 text-[0.75rem]" style={{ color: "var(--muted-foreground)" }}>
+                    <span><span className="font-medium">Nutrition:</span> {w.nutrition}</span>
+                    <span><span className="font-medium">Training:</span> {w.training}</span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
 
-          {[
-            { label: "Nutrition guidelines", content: result.plan.nutritionGuidelines },
-            { label: "Hydration protocol", content: result.plan.hydrationProtocol },
-            { label: "Training adjustments", content: result.plan.trainingAdjustments },
-          ].map(({ label, content }) => (
-            <motion.div
-              key={label}
-              variants={slideIn}
-              className="rounded-[var(--r-card)] border p-4 space-y-1.5"
+          {/* Guidelines — divide-y table */}
+          <motion.div variants={slideIn} className="space-y-3">
+            <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--primary)" }}>
+              Protocol details
+            </p>
+            <div
+              className="rounded-[var(--r-card)] border divide-y"
               style={{ borderColor: "var(--border)", background: "var(--surface)" }}
             >
-              <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--primary)" }}>
-                {label}
-              </p>
-              <p className="text-[0.875rem] leading-relaxed">{content}</p>
-            </motion.div>
-          ))}
+              {[
+                { label: "Nutrition", content: result.plan.nutritionGuidelines },
+                { label: "Hydration", content: result.plan.hydrationProtocol },
+                { label: "Training", content: result.plan.trainingAdjustments },
+              ].map(({ label, content }) => (
+                <div key={label} className="px-5 py-4 space-y-1">
+                  <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--muted-foreground)" }}>
+                    {label}
+                  </p>
+                  <p className="text-[0.875rem] leading-relaxed">{content}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
 
           {result.plan.safetyWarnings.length > 0 && (
             <motion.div
               variants={slideIn}
-              className="rounded-[var(--r-card)] border p-4 space-y-2"
+              className="rounded-[var(--r-card)] border px-5 py-4 space-y-2"
               style={{ borderColor: "var(--warn)", background: "var(--warn-dim)" }}
             >
               <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--warn)" }}>

@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Zap, Menu, X, LogOut } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { createClient } from "@/lib/supabase/client";
@@ -50,14 +50,13 @@ export function Nav() {
         style={{ background: "var(--background)", borderColor: "var(--border)" }}
       >
         <div className="mx-auto flex h-12 max-w-5xl items-center justify-between px-4">
-          <Link href="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-            <div
-              className="flex size-6 items-center justify-center rounded-full"
-              style={{ background: "var(--primary)" }}
+          <Link href="/" className="flex items-center" onClick={() => setOpen(false)}>
+            <span
+              className="text-[0.875rem] font-bold tracking-tight"
+              style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}
             >
-              <Zap size={12} fill="var(--primary-foreground)" color="var(--primary-foreground)" />
-            </div>
-            <span className="text-[0.8125rem] font-semibold">{APP_NAME}</span>
+              {APP_NAME}
+            </span>
           </Link>
 
           {/* Desktop links */}

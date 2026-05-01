@@ -37,16 +37,13 @@ export function PlanClient({ initialPlan, hasProfile }: PlanClientProps) {
 
   if (!hasProfile) {
     return (
-      <div
-        className="rounded-[var(--r-card)] border p-8 text-center"
-        style={{ borderColor: "var(--border)", background: "var(--surface)" }}
-      >
+      <div className="space-y-3">
         <p className="text-[0.875rem]" style={{ color: "var(--muted-foreground)" }}>
-          Complete the wizard to generate your plan.
+          Complete the wizard first. Your plan is built from your weight class, schedule, and competition date.
         </p>
         <Link
           href="/coach"
-          className="mt-4 inline-block text-[0.875rem] font-medium"
+          className="inline-block text-[0.875rem] font-medium"
           style={{ color: "var(--primary)" }}
         >
           Start wizard →
@@ -57,14 +54,11 @@ export function PlanClient({ initialPlan, hasProfile }: PlanClientProps) {
 
   if (!plan) {
     return (
-      <div
-        className="rounded-[var(--r-card)] border p-8 text-center space-y-4"
-        style={{ borderColor: "var(--border)", background: "var(--surface)" }}
-      >
+      <div className="space-y-4">
         <div>
           <p className="text-[0.875rem] font-medium">No plan yet</p>
           <p className="mt-1 text-[0.8125rem]" style={{ color: "var(--muted-foreground)" }}>
-            Generate a weekly schedule, nutrition strategy, and recovery plan from your wizard data.
+            Generate a weekly schedule, nutrition targets, and recovery plan from your wizard data. Takes about 10 seconds.
           </p>
         </div>
         {error && (

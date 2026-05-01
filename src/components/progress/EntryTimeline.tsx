@@ -17,42 +17,65 @@ export function EntryTimeline({ entries }: EntryTimelineProps) {
 
   return (
     <div className="space-y-3">
-      <h2 className="text-base font-semibold tracking-tight">Progress history</h2>
+      <h2
+        className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em]"
+        style={{ color: "var(--primary)" }}
+      >
+        Progress history
+      </h2>
 
-      <div className="space-y-3">
+      <div
+        className="rounded-[var(--r-card)] border overflow-hidden divide-y"
+        style={{ borderColor: "var(--border)" }}
+      >
         {sorted.map((entry) => (
           <div
             key={entry.id}
-            className="rounded-[var(--r-card)] border p-5 space-y-3"
-            style={{ borderColor: "var(--border)", background: "var(--surface)" }}
+            className="px-5 py-4 space-y-2"
+            style={{ background: "var(--surface)" }}
           >
-            <div className="flex items-center justify-between">
+            {/* Row header: week + status + weight */}
+            <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2.5">
                 {entry.on_track !== null && (
                   <div
-                    className="size-2 rounded-full"
+                    className="size-1.5 rounded-full shrink-0"
                     style={{ background: entry.on_track ? "var(--success)" : "var(--warn)" }}
                   />
                 )}
-                <span className="text-[0.8125rem] font-medium">Week {entry.week_number}</span>
+                <span className="text-[0.8125rem] font-medium">
+                  Week {entry.week_number}
+                </span>
+                {entry.on_track !== null && (
+                  <span
+                    className="text-[0.75rem]"
+                    style={{ color: entry.on_track ? "var(--success)" : "var(--warn)" }}
+                  >
+                    {entry.on_track ? "on track" : "off track"}
+                  </span>
+                )}
               </div>
-              <span className="text-[0.8125rem] font-semibold" style={{ color: "var(--primary)" }}>
+              <span className="text-[0.875rem] font-semibold tabular-nums shrink-0" style={{ color: "var(--primary)" }}>
                 {entry.current_weight}kg
               </span>
             </div>
 
+            {/* Notes */}
             {entry.notes && (
-              <p className="text-[0.8125rem]" style={{ color: "var(--muted-foreground)" }}>
+              <p className="text-[0.8125rem] leading-relaxed" style={{ color: "var(--muted-foreground)" }}>
                 {entry.notes}
               </p>
             )}
 
+            {/* AI feedback — background tint, no side stripe */}
             {entry.ai_feedback && (
               <div
-                className="rounded-[var(--r-input)] border-l-2 pl-3 py-1"
-                style={{ borderColor: "var(--primary)", color: "var(--foreground)" }}
+                className="rounded-[var(--r-input)] px-3 py-2.5"
+                style={{ background: "var(--surface-raised)" }}
               >
-                <p className="text-[0.8125rem] leading-relaxed">{entry.ai_feedback}</p>
+                <p className="text-[0.8125rem] leading-relaxed" style={{ color: "var(--foreground)" }}>
+                  {entry.ai_feedback}
+                </p>
               </div>
             )}
           </div>

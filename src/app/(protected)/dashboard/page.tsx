@@ -114,7 +114,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-background px-4 py-10">
-      <div className="mx-auto max-w-lg space-y-6">
+      <div className="mx-auto max-w-lg space-y-8">
         {/* Header */}
         <div>
           <p
@@ -131,57 +131,67 @@ export default async function DashboardPage() {
         {/* Summary */}
         <SummaryCard estimate={estimate} latestEntry={latestEntry} />
 
-        {/* Competition countdown — replaces milestone when date is set */}
+        {/* Competition countdown — raw typographic treatment, no nested mini-cards */}
         {hasCompetition ? (
-          <div className="space-y-3">
-            {/* Amber warning for final prep phase */}
+          <div className="space-y-4">
             {isFinalPrep && (
               <div
-                className="rounded-[var(--r-card)] border p-4"
-                style={{ borderColor: "var(--warn, oklch(0.75 0.15 80))", background: "oklch(0.75 0.15 80 / 8%)" }}
+                className="rounded-[var(--r-card)] border px-5 py-4"
+                style={{ borderColor: "var(--warn)", background: "var(--warn-dim)" }}
               >
-                <p className="text-[0.8125rem] font-semibold" style={{ color: "var(--warn, oklch(0.6 0.15 80))" }}>
+                <p className="text-[0.8125rem] font-semibold" style={{ color: "var(--warn)" }}>
                   Final prep phase
                 </p>
-                <p className="text-[0.8125rem]" style={{ color: "var(--warn, oklch(0.6 0.15 80))" }}>
+                <p className="mt-0.5 text-[0.8125rem]" style={{ color: "var(--warn)" }}>
                   Prioritise recovery and weight management in these final weeks.
                 </p>
               </div>
             )}
 
-            <div
-              className="rounded-[var(--r-card)] border p-5 space-y-4"
-              style={{ borderColor: "var(--primary)", background: "var(--accent-dim)" }}
-            >
+            {/* Primary stat block — data is the visual */}
+            <div>
               <p
-                className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em]"
+                className="mb-3 text-[0.6875rem] font-semibold uppercase tracking-[0.08em]"
                 style={{ color: "var(--primary)" }}
               >
-                {daysToComp} days to competition
-                {compWeightClass ? ` · ${kgToComp !== null ? kgToComp.toFixed(1) : "?"}kg to ${compWeightClass}kg` : ""}
+                Competition countdown
               </p>
-              <div className="grid grid-cols-2 gap-3">
-                <div
-                  className="rounded-[var(--r-card)] border p-3 text-center"
-                  style={{ borderColor: "var(--border)", background: "var(--background)" }}
-                >
-                  <p className="text-2xl font-bold" style={{ color: "var(--primary)" }}>
+              <div className="flex items-end gap-8">
+                <div>
+                  <p
+                    className="font-bold tabular-nums leading-none"
+                    style={{ fontSize: "clamp(3rem, 12vw, 4.5rem)", letterSpacing: "-0.04em", color: "var(--foreground)" }}
+                  >
                     {daysToComp}
                   </p>
-                  <p className="text-[0.75rem] mt-0.5" style={{ color: "var(--muted-foreground)" }}>
-                    days remaining
+                  <p className="mt-1 text-[0.75rem] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+                    days to competition
                   </p>
                 </div>
-                {kgToComp !== null && (
-                  <div
-                    className="rounded-[var(--r-card)] border p-3 text-center"
-                    style={{ borderColor: "var(--border)", background: "var(--background)" }}
-                  >
-                    <p className="text-2xl font-bold" style={{ color: "var(--primary)" }}>
+                {kgToComp !== null && kgToComp > 0 && (
+                  <div>
+                    <p
+                      className="font-bold tabular-nums leading-none"
+                      style={{ fontSize: "clamp(3rem, 12vw, 4.5rem)", letterSpacing: "-0.04em", color: "var(--primary)" }}
+                    >
                       {kgToComp.toFixed(1)}
                     </p>
-                    <p className="text-[0.75rem] mt-0.5" style={{ color: "var(--muted-foreground)" }}>
+                    <p className="mt-1 text-[0.75rem] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
                       kg to cut
+                      {compWeightClass ? ` to ${compWeightClass}kg` : ""}
+                    </p>
+                  </div>
+                )}
+                {kgToComp === 0 && (
+                  <div>
+                    <p
+                      className="font-bold leading-none"
+                      style={{ fontSize: "clamp(1.5rem, 5vw, 2rem)", letterSpacing: "-0.025em", color: "var(--success)" }}
+                    >
+                      At weight
+                    </p>
+                    <p className="mt-1 text-[0.75rem] font-medium uppercase tracking-wider" style={{ color: "var(--muted-foreground)" }}>
+                      {compWeightClass ? `${compWeightClass}kg class` : "target class"}
                     </p>
                   </div>
                 )}
@@ -189,47 +199,38 @@ export default async function DashboardPage() {
             </div>
           </div>
         ) : (
-          /* Standard milestone progress when no competition date */
+          /* Milestone progress — no card wrapper, just the bar and label */
           weeksLogged > 0 && estimate && (
-            <div
-              className="rounded-[var(--r-card)] border p-5 space-y-3"
-              style={{ borderColor: "var(--border)", background: "var(--surface)" }}
-            >
-              <p
-                className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em]"
-                style={{ color: "var(--primary)" }}
-              >
-                Progress milestone
-              </p>
-              <div className="flex items-center justify-between">
-                <p className="text-[0.875rem]" style={{ color: "var(--muted-foreground)" }}>
-                  {weeksLogged} week{weeksLogged !== 1 ? "s" : ""} logged
+            <div>
+              <div className="mb-2 flex items-baseline justify-between">
+                <p
+                  className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em]"
+                  style={{ color: "var(--primary)" }}
+                >
+                  Progress milestone
                 </p>
-                <p className="text-[0.875rem] font-semibold" style={{ color: "var(--foreground)" }}>
-                  {milestonePct}% of estimate
+                <p className="text-[0.8125rem] font-semibold tabular-nums" style={{ color: "var(--foreground)" }}>
+                  {milestonePct}%
                 </p>
               </div>
-              <div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--border)" }}>
+              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "var(--border)" }}>
                 <div
                   className="h-full rounded-full transition-all duration-500"
                   style={{ width: `${milestonePct}%`, background: "var(--primary)" }}
                 />
               </div>
-              {weeksLogged >= 12 && (
-                <p className="text-[0.8125rem]" style={{ color: "var(--success)" }}>
-                  Exceptional commitment. 12 weeks in.
-                </p>
-              )}
-              {weeksLogged >= 8 && weeksLogged < 12 && (
-                <p className="text-[0.8125rem]" style={{ color: "var(--success)" }}>
-                  8 weeks logged.
-                </p>
-              )}
-              {weeksLogged >= 4 && weeksLogged < 8 && (
-                <p className="text-[0.8125rem]" style={{ color: "var(--success)" }}>
-                  4 weeks logged.
-                </p>
-              )}
+              <p className="mt-2 text-[0.8125rem]" style={{ color: "var(--muted-foreground)" }}>
+                {weeksLogged} week{weeksLogged !== 1 ? "s" : ""} logged
+                {weeksLogged >= 12 && (
+                  <span style={{ color: "var(--success)" }}> · Exceptional commitment. 12 weeks in.</span>
+                )}
+                {weeksLogged >= 8 && weeksLogged < 12 && (
+                  <span style={{ color: "var(--success)" }}> · 8 weeks logged.</span>
+                )}
+                {weeksLogged >= 4 && weeksLogged < 8 && (
+                  <span style={{ color: "var(--success)" }}> · 4 weeks logged.</span>
+                )}
+              </p>
             </div>
           )
         )}
@@ -266,48 +267,37 @@ export default async function DashboardPage() {
         )}
 
         {/* Quick links */}
-        <div
-          className="rounded-[var(--r-card)] border p-5 space-y-3"
-          style={{ borderColor: "var(--border)", background: "var(--surface)" }}
-        >
-          <p
-            className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em]"
-            style={{ color: "var(--muted-foreground)" }}
+        <div className="space-y-2">
+          <Link href="/progress" className={cn(buttonVariants({ size: "lg" }), "w-full")}>
+            Log this week →
+          </Link>
+          <Link
+            href="/plan"
+            className={cn(buttonVariants({ variant: "outline", size: "default" }), "w-full")}
           >
-            Quick actions
-          </p>
-          <div className="grid grid-cols-1 gap-2">
-            <Link href="/progress" className={cn(buttonVariants({ size: "lg" }), "w-full")}>
-              Log this week →
-            </Link>
+            {hasPlan ? "View training plan" : "Generate training plan"}
+          </Link>
+          {!hasWizardData && (
             <Link
-              href="/plan"
-              className={cn(buttonVariants({ variant: "outline", size: "default" }), "w-full")}
+              href="/coach"
+              className={cn(buttonVariants({ variant: "ghost", size: "default" }), "w-full")}
             >
-              {hasPlan ? "View training plan" : "Generate training plan"}
+              Re-run fitness wizard
             </Link>
-            {!hasWizardData && (
-              <Link
-                href="/coach"
-                className={cn(buttonVariants({ variant: "ghost", size: "default" }), "w-full")}
-              >
-                Re-run fitness wizard
-              </Link>
-            )}
-          </div>
+          )}
         </div>
 
         {/* Empty state: no wizard data */}
         {!hasWizardData && (
           <div
-            className="rounded-[var(--r-card)] border p-6 text-center"
+            className="rounded-[var(--r-card)] border p-6"
             style={{ borderColor: "var(--border)", background: "var(--surface)" }}
           >
             <p className="text-[0.875rem] font-medium">Complete your profile</p>
             <p className="mt-1 text-[0.8125rem]" style={{ color: "var(--muted-foreground)" }}>
               Complete the wizard to get your estimate and generate a training plan.
             </p>
-            <Link href="/coach" className={cn(buttonVariants({ size: "sm" }), "mt-4")}>
+            <Link href="/coach" className={cn(buttonVariants({ size: "sm" }), "mt-4 inline-flex")}>
               Start wizard
             </Link>
           </div>
