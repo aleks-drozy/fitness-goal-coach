@@ -1,13 +1,13 @@
 import { createClient } from "@/lib/supabase/server";
+import { getUserIsPremium } from "@/lib/premium";
 import { PlanClient } from "@/components/plan/PlanClient";
+import { PremiumGate } from "@/components/PremiumGate";
 
 export default async function PlanPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  const [{ data: latestPlan }, { data: profile }] = await Promise.all([
+  const [{ data: latestPlan }, { data: profile }, isPremium] = await Promise.all([
     supabase
       .from("fitness_plans")
       .select("plan")
@@ -20,6 +20,7 @@ export default async function PlanPage() {
       .select("wizard_state")
       .eq("id", user!.id)
       .maybeSingle(),
+    getUserIsPremium(),
   ]);
 
   const hasProfile = !!(profile?.wizard_state);
@@ -40,10 +41,17 @@ export default async function PlanPage() {
           </p>
         </div>
 
-        <PlanClient
-          initialPlan={latestPlan?.plan ?? null}
-          hasProfile={hasProfile}
-        />
+        {!isPremium ? (
+          <PremiumGate
+            feature="AI Training Plan"
+            description="A personalised weekly schedule, nutrition strategy, and sport-specific conditioning plan — generated from your wizard data and updated as you log progress."
+          />
+        ) : (
+          <PlanClient
+            initialPlan={latestPlan?.plan ?? null}
+            hasProfile={hasProfile}
+          />
+        )}
       </div>
     </div>
   );

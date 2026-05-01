@@ -23,11 +23,14 @@ export default function SignupPage() {
     setError(null)
 
     const supabase = createClient()
+
+    // After email confirmation, redirect back to /coach/results so the
+    // results page can upsert wizard_state into the newly-created profile.
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${location.origin}/auth/callback`,
+        emailRedirectTo: `${location.origin}/auth/callback?next=/coach/results`,
       },
     })
 
@@ -38,8 +41,10 @@ export default function SignupPage() {
     }
 
     if (data.session) {
+      // Immediate session (email confirmation disabled) — go back to results
+      // so wizard_state gets upserted before the user navigates anywhere.
       router.refresh()
-      router.push("/dashboard")
+      router.push("/coach/results")
     } else {
       setShowConfirmation(true)
     }

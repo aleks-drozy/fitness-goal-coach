@@ -103,7 +103,21 @@ export default function ResultsPage() {
       setResult(state.estimateResult);
       setLoading(false);
       const supabase = createClient();
-      supabase.auth.getUser().then(({ data: { user } }) => setIsLoggedIn(!!user));
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        setIsLoggedIn(!!user);
+        // Upsert even when estimate is cached — handles the case where the user
+        // completed the wizard as a guest, created an account, and was redirected
+        // back here. Without this, wizard_state is never saved to Supabase.
+        if (user) {
+          supabase.from("profiles").upsert({
+            id: user.id,
+            wizard_state: state,
+            estimate_result: state.estimateResult,
+          }).then(({ error }) => {
+            if (error) console.error("Profile upsert failed:", error.message);
+          });
+        }
+      });
       return;
     }
 

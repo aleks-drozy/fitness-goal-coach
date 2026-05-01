@@ -1,16 +1,21 @@
 import { createClient } from "@/lib/supabase/server";
+import { getUserIsPremium } from "@/lib/premium";
 import { WeightCutClient } from "@/components/weight-cut/WeightCutClient";
+import { PremiumGate } from "@/components/PremiumGate";
 import type { CompetitionContext, OnboardingData, Sport } from "@/lib/types";
 
 export default async function WeightCutPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("wizard_state")
-    .eq("id", user!.id)
-    .maybeSingle();
+  const [{ data: profile }, isPremium] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("wizard_state")
+      .eq("id", user!.id)
+      .maybeSingle(),
+    getUserIsPremium(),
+  ]);
 
   const ws = profile?.wizard_state as Record<string, unknown> | null;
   const onboarding = (ws?.onboarding ?? {}) as Partial<OnboardingData>;
@@ -42,7 +47,15 @@ export default async function WeightCutPage() {
             Generate a safe, performance-preserving weight cut protocol. Cuts over 5% bodyweight in under 14 days are refused.
           </p>
         </div>
-        <WeightCutClient prefill={prefill} />
+
+        {!isPremium ? (
+          <PremiumGate
+            feature="Weight Cut Protocol"
+            description="A day-by-day water and nutrition cut plan tailored to your sport, competition date, and weight class — with hard safety limits built in."
+          />
+        ) : (
+          <WeightCutClient prefill={prefill} />
+        )}
       </div>
     </div>
   );

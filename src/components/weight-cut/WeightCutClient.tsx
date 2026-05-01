@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { DateSelect } from "@/components/wizard/DateSelect";
 import type { Sport } from "@/lib/types";
 
 // Weight class data per sport (mirrors JudoForm.tsx)
@@ -170,14 +171,12 @@ export function WeightCutClient({ prefill }: { prefill: Prefill }) {
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="date">Competition date</Label>
-            <Input
+            <Label>Competition date</Label>
+            <DateSelect
               id="date"
-              type="date"
-              value={competitionDate}
-              onChange={(e) => setCompetitionDate(e.target.value)}
-              required
               min={new Date().toISOString().split("T")[0]}
+              value={competitionDate || null}
+              onChange={(v) => setCompetitionDate(v ?? "")}
             />
           </div>
         </div>

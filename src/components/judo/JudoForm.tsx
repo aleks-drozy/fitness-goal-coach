@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DateSelect } from "@/components/wizard/DateSelect";
 import { JudoIntensity, Sport } from "@/lib/types";
 
 // Weight class data per sport
@@ -251,18 +252,17 @@ export function JudoForm() {
             <div className="space-y-5">
               <WeightClassSelector sport={sport} sex={onboarding.sex} />
               <div className="space-y-1.5">
-                <Label htmlFor="comp-date">
+                <Label>
                   Competition date
                   <span className="ml-1.5 text-[0.75rem] font-normal" style={{ color: "var(--muted-foreground)" }}>
                     required for competition-anchored estimate
                   </span>
                 </Label>
-                <Input
+                <DateSelect
                   id="comp-date"
-                  type="date"
                   min={today}
-                  value={competitionContext.competitionDate ?? ""}
-                  onChange={(e) => setCompetitionContext({ competitionDate: e.target.value || null })}
+                  value={competitionContext.competitionDate}
+                  onChange={(v) => setCompetitionContext({ competitionDate: v })}
                 />
               </div>
             </div>
@@ -272,18 +272,17 @@ export function JudoForm() {
             <div className="space-y-5">
               <WeightClassSelector sport={sport} sex={onboarding.sex} />
               <div className="space-y-1.5">
-                <Label htmlFor="comp-date-opt">
+                <Label>
                   Upcoming competition date
                   <span className="ml-1.5 text-[0.75rem] font-normal" style={{ color: "var(--muted-foreground)" }}>
                     optional
                   </span>
                 </Label>
-                <Input
+                <DateSelect
                   id="comp-date-opt"
-                  type="date"
                   min={today}
-                  value={competitionContext.competitionDate ?? ""}
-                  onChange={(e) => setCompetitionContext({ competitionDate: e.target.value || null })}
+                  value={competitionContext.competitionDate}
+                  onChange={(v) => setCompetitionContext({ competitionDate: v })}
                 />
               </div>
             </div>
